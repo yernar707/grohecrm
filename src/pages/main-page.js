@@ -15,7 +15,8 @@ import Integrations from "../components/integrations"
 import "../components/layout.css"
 
 const MainPage = () => {
-  !isLoggedIn() && navigate(`/`) 
+  if(!isLoggedIn)
+    navigate(`/`)
   return (
       <Layout>
         <Seo title="Grohe" />
