@@ -15,8 +15,10 @@ import Integrations from "../components/integrations"
 import "../components/layout.css"
 
 const MainPage = () => {
+  const isBrowser = () => typeof window !== "undefined"
+  
   if(!isLoggedIn)
-    navigate(`/`)
+      isBrowser && navigate(`/`)
   return (
       <Layout>
         <Seo title="Grohe" />
