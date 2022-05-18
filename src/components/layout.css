@@ -1,10 +1,12 @@
+@import "../css/typography.css";
+
 :root {
   --border-radius: 4px;
   --color-text: #333;
   --color-primary: #7026b9;
   --color-code-bg: #fff4db;
   --color-code: #8a6534;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+  --font-sans: "SF UI Display",-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
@@ -21,7 +23,7 @@
   --space-4: 24px;
   --space-5: 32px;
   --space-6: 64px;
-  --size-content: 54rem;
+  --size-content: 1300px;
   --size-gutter: var(--space-5);
   --size-gap: var(--space-6);
 }
@@ -221,4 +223,998 @@ pre code:after,
 pre tt:before,
 pre tt:after {
   content: none;
+}
+
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgb(180, 180, 180); 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(150, 150, 150); 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #5b5b5b; 
+}
+
+.body-element {
+  max-width: 1600px;
+  width: 1440px;
+}
+
+.layout-div {
+  margin: 0 auto;
+  padding: 15px 90px;
+  position: relative;
+}
+
+.default-header {
+  height: 70px;
+  background: #C3CAD2;
+  width: 100%;
+  min-width: 1440px;
+}
+
+.intro {
+  position: relative; 
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+
+.intro-container {
+  position: absolute;
+  top: 50%;
+  /* transform: translateY(-50%); */
+}
+
+.default-container {
+  max-width: 1600px;
+  width: 1300px;
+  /* width: 100%; */
+  height: 100%;
+  margin: auto;
+}
+
+.flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+}
+
+.flex-item {
+  display: flex;
+  height: 100%;
+  justify-content: start;
+  align-items: center;
+  padding-left: 25px;
+  position: relative;
+}
+
+.default-header .default-container {
+  margin-left: 100px;
+}
+
+.default-header .default-container .flex-row {
+  align-items: center;
+}
+
+.auth {
+  position: relative;
+  height: 100vh;
+  max-height: 1024px;
+  background-color: #F6F6F6;
+  text-align: left;
+}
+
+.auth>form {
+  position: absolute;
+  margin: auto;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  width: 400px;
+}
+
+.auth>form>p {
+  margin: 0;
+  font-size: 16px;
+}
+
+h4 {
+  font-weight: 700;
+}
+
+.auth>form>div>label {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  display: block;
+} 
+
+.auth>form>div>input {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid #9C9C9C;
+  border-radius: 10px;
+  font-size: 16px;
+  padding: 7px 20px;
+} 
+
+.auth>form>div>input[type=submit] {
+  background: #152849;
+  color: #FFF;
+} 
+
+.forget-pass {
+  margin-top: 20px;
+  margin-bottom: 35px;
+  text-align: right;
+} 
+
+.forget-pass a {
+  text-decoration: none;
+  color: #000;
+}
+
+.intro-img {
+  background: url(../images/bck.png);
+  background-size: cover;
+  background-position: center;
+}
+
+.nav-item {
+  line-height: 15px;
+  margin: 12px 0;
+}
+
+.nav-item a {
+  color: #5681B1;
+  font-weight: 600;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.nav-item a svg {
+  display: block;
+  width: 100%;
+}
+
+.nav-item a svg path{
+  fill: #5681B1;
+}
+
+.nav-item a:hover svg path, .nav-item a:hover {
+  color: #FFF;
+  fill: #FFF;
+}
+
+.nav-item .active-nav-link svg path, .nav-item .active-nav-link{
+  color: #FFF;
+  fill: #FFF;
+}
+
+.search-field {
+  position: relative;
+}
+
+.search-field input {
+  background: rgba(15, 43, 75, 0.25);
+  border-radius: 5px;
+  width: 100%;
+  padding: 5px 45px;
+  border: none;
+  color: #FFF;
+}
+.search-field input::placeholder {
+  color: #FFF;
+}
+
+.search-field svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.main-button {
+  border: none;
+  background: #0F2B4B;
+  border-radius: 5px;
+  color: #FFF;
+  padding: 5px 25px;
+}
+
+.desktop-content {
+  padding: 70px 0;
+}
+
+.hello-user {
+  text-align: center;
+  color: #5681B1;
+}
+
+.card-outer {
+  padding: 5px;
+}
+
+.card {
+  background-color: #0F2B4B;
+  color: #FFF;
+  padding: 15px 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  border-radius: 10px;
+  height: 100%;
+}
+
+.card-content {
+  text-transform: uppercase;
+  font-size: 48px;
+  position: relative;
+}
+
+.card-content hr {
+  width: 100px;
+  height: 1px;
+  background: #FFF;
+  opacity: 1;
+}
+
+.card-bottom-text {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  text-transform: none;
+  color: #5681B1;
+  margin-bottom: 0;
+}
+
+.card-absolute-text {
+  position: absolute;
+  right: 0px;
+  text-align: end;
+  top: 5px;
+  font-size: 36px;
+  line-height: 40px;
+  color: #00D669;
+} 
+
+.desktop-list-item {
+  font-size: 13px;
+}
+
+.desktop-list-item hr {
+  height: 2px;
+  border-radius: 5px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.desktop-list-item p {
+  text-transform: none;
+  display: inline;
+  margin-right: 15px;
+}
+
+.desktop-list-item-name {
+  font-weight: 300;
+}
+
+.card-content .contact-line {
+  background:#FFD66D;
+}
+
+.card-content .deal-line {
+  background: #091A2F;
+}
+
+.page-title {
+  text-transform: uppercase;
+  border-right: 2px solid #FFF;
+}
+
+.flex-item form {
+  width: 100%;
+}
+
+.flex-item form i {
+  position: absolute;
+  top: 30%;
+}
+
+.flex-item form input {
+  width: 100%;
+  background-color: transparent;
+  padding: 0 35px;
+  border: none;
+  color: #FFF;
+  outline: none;
+}
+
+.flex-item form input::placeholder {
+  color: #FFF;
+}
+
+.flex-item p {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.sdelki-quantity {
+  color: #5681B1;
+  margin-right: 5px;
+}
+
+.flex-item button {
+  font-size: 12px;
+  border: none;
+}
+
+.three-dots {
+  background: transparent;
+  margin-left: 25px;
+}
+
+.settings-button {
+  margin-left: 25px;
+  padding: 5px 15px;
+  background: #FFFFFF;
+  border-radius: 5px;
+  color: #0F2B4B;
+}
+
+.new-sdelka-button {
+  margin-left: 10px;
+  padding: 5px 15px;
+  background: #0F2B4B;
+  border-radius: 5px;
+  color: #FFF;
+}
+
+.new-sklad-button {
+  margin-left: 25px;
+  padding: 5px 15px;
+  background: #0F2B4B;
+  border-radius: 5px;
+  color: #FFF;
+}
+
+.flex-item-last {
+  justify-content: flex-end !important;
+}
+
+.default-content {
+  padding: 100px 120px;
+}
+
+.sdelki-column {
+  padding: 5px;
+}
+
+.column-title {
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.column-subtitle {
+  text-align: center;
+}
+
+.sdelki-column hr {
+  height: 4px;
+  opacity: 1;
+}
+
+.quick-add {
+  width: 100%;
+  border: 1px solid #C4C4C4;
+  border-radius: 5px;
+  background: transparent;
+  color: #C4C4C4;
+  padding: 10px;
+}
+
+.first-column hr {
+  background: rgba(86, 129, 177, 0.65);
+}
+.second-column hr {
+  background: #FDFF99;
+}
+.third-column hr {
+  background: #FFD66D;
+}
+.fourth-column hr {
+  background: #FFABAB;
+}
+
+.quick-add-form {
+  width: 95%;
+  margin: auto;
+}
+
+.quick-add-form input, .quick-add-form button{
+  width: 100%;
+  padding: 5px 15px;
+  margin-bottom: 5px;
+  border: 1px solid #C4C4C4;
+  color: #C4C4C4;
+  outline: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.quick-add-form input::placeholder {
+  color: #C4C4C4;
+}
+
+.quick-add-form .submit-button {
+  background: #0F2B4B;
+  border-radius: 5px;
+  color: #FFF;
+  font-weight: 300;
+  padding: 12px 20px;
+}
+
+.quick-add-form .cancel-button {
+  margin-left: 15px;
+  background: transparent;
+  font-weight: 300;
+  color: #0F2B4B;
+  border: none;
+  padding: 12px 20px;
+}
+
+.sklad-column {
+  padding: 5px;
+}
+
+.sklad-title {
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.sklad-show-button {
+  width: 100%;
+  padding: 5px 15px;
+  background: #FFFFFF;
+  border-radius: 5px;
+  border: none;
+  text-transform: uppercase;
+  color: #0F2B4B;
+}
+
+.sklad-modal {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: #FFF;
+  z-index: 999;
+  border-radius: 15px;
+  text-align: center;
+  padding: 25px 40px;
+}
+
+.sklad-modal-title {
+  text-transform: uppercase;
+}
+
+.dark-bg {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: #33333365;
+}
+
+table{
+  margin-top: 25px;
+  width: 100%;
+  background: #F4F4F4;
+  border-radius: 5px;
+}
+
+table td {
+  color: #5681B1;
+  font-size: 14px;
+  position: relative;
+  padding: 10px;
+}
+
+table th {
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 12px;
+  /* border-right: 0.5px solid #C4C4C4; */
+  align-items: center;
+  position: relative;
+  padding: 10px;
+}
+
+table th::after {
+  content:"";
+  position:absolute;
+  top:10%;
+  right:0;
+  width:0.5px;
+  height:80%;
+  background:#C4C4C4;
+}
+
+table tr {
+  border-bottom: 0.5px solid #C4C4C4;
+}
+
+table tr:last-child {
+  border: none;
+}
+
+table th:first-child, table td:first-child {
+  text-align: end;
+}
+
+table th:last-child::after, table th:first-child::after {
+  width: 0;
+}
+
+.container-check {
+  display: block;
+  position: relative;
+  padding-left: 15px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container-check input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: -50%;
+  transform: translateY(-25%);
+  right: 5px;
+  height: 25px;
+  width: 25px;
+  background-color: transparent;
+  border: 1px solid #C4C4C4;
+  border-radius: 5px;
+}
+
+/* On mouse-over, add a grey background color */
+.container-check:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container-check input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container-check input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container-check .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.skladmen-name {
+  margin: auto;
+}
+
+.default-blue-button {
+  padding: 0px 15px;
+  background: #0F2B4B;
+  border-radius: 5px;
+  color: #FFF;
+  font-weight: 300;
+}
+
+.default-white-button {
+  margin-left: 15px;
+  background: transparent;
+  font-weight: 300;
+  color: #0F2B4B;
+  border: none;
+  padding: 0px 15px;
+}
+
+.default-input {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 10px 25px;
+  color:#929292;
+  margin-bottom: 10px;
+  border: none;
+  font-weight: 300;
+}
+
+.add-good {
+  padding: 5px;
+}
+
+.new-good-modal {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  background: #E5E5E5;
+  z-index: 999;
+  border-radius: 15px;
+  text-align: center;
+  padding: 25px 40px;
+}
+
+.new-good-modal-title {
+  text-align: left;
+  font-weight: 600;
+}
+
+.new-good-buttons {
+  padding-top: 15px;
+  text-align: left;
+}
+
+.sdelka .card {
+  background: transparent;
+  border: 1px solid #C4C4C4;
+  color: #0F2B4B;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.sdelka-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.sdelka-show {
+  text-transform: lowercase;
+  font-size: 14px;
+  text-align: center;
+  color: #5681B1;
+}
+
+.sdelka-show span {
+  cursor: pointer;
+}
+
+.sdelka-modal {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  background: #E5E5E5;
+  z-index: 999;
+  border-radius: 15px;
+  text-align: center;
+  padding: 25px 40px;
+}
+
+.sdelka-modal-title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.sdelka-modal-content {
+  text-align: left;
+  font-size: 18px;
+}
+
+.sdelka-modal-content ul li {
+  margin-bottom: 0;
+}
+
+.grey-bg {
+  background-color: #F4F4F4;
+}
+
+.sklad-modal-search {
+  position: relative;
+}
+
+.sklad-modal-search input {
+  margin-top: 15px;
+  padding-left: 45px;
+}
+
+.sklad-modal-search svg{
+  position: absolute;
+  top: 40%;
+  left: 15px;
+}
+
+.sklad-modal-search path {
+  fill: #929292;
+}
+
+.analytics-page {
+  min-width: 1440px;
+  background: #E5E5E5;
+  min-height: 768px;
+}
+
+.analytics-page .default-container {
+  margin-left: 80px;
+}
+
+.analytics-page .page-title{
+  border: none;
+  font-weight: 600;
+  font-size: 24px;
+  border-bottom: 2px solid #929292;
+}
+
+.sidebar {
+  background: #FFFFFF;
+  min-height: 768px;
+}
+
+.sidebar-item {
+  padding: 35px;
+  font-size: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #929292;
+}
+
+
+.sidebar-item:last-child {
+  border: none !important;
+}
+
+.clickable {
+  cursor: pointer;
+  margin-bottom: 0;
+  width: fit-content;
+  text-decoration: none;
+  color: #000;
+}
+
+.active-clickable {
+  color: #5681B1;
+}
+
+.analytics-content {
+  padding: 50px 20px;
+}
+
+.content-title {
+  font-size: 18px;
+  line-height: 21px;
+  text-transform: uppercase;
+  color: #000000;
+}
+
+.analytics-container{
+  padding: 20px 0;
+  width: 100%;
+}
+
+.flex-column {
+  display: flex;
+}
+
+.analytics-container .flex-row {
+  background: transparent;
+  border-radius: 0;
+  border: 1px solid #929292;
+  padding: 30px 10px;
+  color: #000;
+}
+
+.analytics-container p {
+  margin-bottom: 0;
+}
+
+.border-right {
+  border-right: 1px solid #929292;
+}
+
+.card-uppercase {
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.card-bignum {
+  font-size: 48px;
+}
+
+.stages {
+  padding: 15px;
+}
+
+.analytics-small-card {
+  width: 200px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  margin: 0 5px;
+}
+
+.analytics-small-card-top {
+  box-shadow: inset 0px -1px 0px 1px #929292;
+  border-top: none;
+  margin-bottom: 20px;
+  position: relative;
+  box-sizing: border-box;
+  padding-bottom: 30px;
+}
+
+.analytics-small-card-title {
+  font-size: 14px;
+  text-align: center;
+  text-transform: none;
+  padding: 7px 0 23px 0;
+}
+
+.analytics-small-card-content {
+  border: 1px solid #929292;
+  border-left: none;
+  padding: 10px;
+  min-width: 80%;
+  width: fit-content;
+}
+
+.analytics-small-card-content p {
+  display: inline-block;
+}
+
+.analytics-small-card-content .sdelki {
+  font-size: 24px;
+}
+
+.analytics-small-card-content .money {
+  font-size: 18px;
+}
+
+.analytics-small-card-bottom {
+  width: 100%;
+  border: 1px solid #929292;
+  text-align: center;
+  padding: 5px;
+  font-size: 14px;
+  text-transform: none;
+}
+
+.highlighted-top {
+  position: absolute;
+  opacity: 1;
+  height: 10px !important;
+  top: -5px;
+  width: 100%;
+}
+
+.yellow-bg {
+  background:#FDFF99;
+}
+
+.blue-bg {
+  background: #5681B1;
+}
+
+.orange-bg {
+  background: #FFD66D;
+}
+
+.pink-bg {
+  background: #FFABAB;
+}
+
+.green-bg {
+  background: #6BD86F;
+}
+
+.scroll-box {
+  display: -webkit-box;
+  overflow: auto;
+}
+
+.sklad-analytics-container {
+  padding: 25px 0;
+}
+
+.sklad-modal-card-outer {
+  padding: 10px;
+}
+.sklad-modal-card {
+  background: #FFF;
+  padding: 25px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+}
+
+.sklad-modal-card-title {
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.sklad-modal-card-quantity {
+  font-weight: 300;
+  font-size: 96px;
+  line-height: 115px;
+}
+
+.sklad-modal-card-bottom {
+  font-weight: 400;
+  font-size: 20px;
+  color: #929292;
+}
+
+.sklad-modal-card-income {
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 48px;
+  color: #0F2B4B;
+}
+
+.sklad-modal-card-expenses {
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 48px;
+  text-align: center;
+  color: #FFD66D;
+  }
+
+.sklad-modal-card-profit {
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 48px;
+  text-align: center;
+  color: #00D669;
 }

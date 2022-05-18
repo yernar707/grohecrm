@@ -1,0 +1,42 @@
+@font-face {
+    font-family: "SF UI Display";
+    src: url("../fonts/sf-ui-display-black-58646a6b80d5a.woff");
+    font-weight: 800;
+}
+
+@font-face {
+    font-family: "SF UI Display";
+    src: url("../fonts/sf-ui-display-bold-58646a511e3d9.woff");
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: "SF UI Display";
+    src: url("../fonts/sf-ui-display-heavy-586470160b9e5.woff");
+    font-weight: 700;
+}
+@font-face {
+    font-family: "SF UI Display";
+    src: url("../fonts/sf-ui-display-light-58646b33e0551.woff");
+    font-weight: 300;
+}
+@font-face {
+    font-family: "SF UI Display";
+    src: url("../fonts/sf-ui-display-medium-58646be638f96.woff");
+    font-weight: 400;
+}
+@font-face {
+    font-family: "SF UI Display";
+    src: url("../fonts/sf-ui-display-semibold-58646eddcae92.woff");
+    font-weight: 500;
+}
+@font-face {
+    font-family: "SF UI Display";
+    src: url("../fonts/sf-ui-display-thin-58646e9b26e8b.woff");
+    font-weight: 200;
+}
+@font-face {
+    font-family: "SF UI Display";
+    src: url("../fonts/sf-ui-display-thin-58646e9b26e8b.woff");
+    font-weight: 100;
+}
