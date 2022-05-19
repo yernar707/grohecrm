@@ -7,19 +7,18 @@ class RingoStat extends React.Component {
     }
 
 	componentDidMount() {
-        var myHeaders = new Headers();
-        myHeaders.append("Auth-key", "ahWrEDgck4jXGa0lA9qjCX8iMtPtKMMD");
-
-        var requestOptions = {
-            method: 'GET',
-            headers: myHeaders,
-            redirect: 'follow'
-        };
-
-        fetch("https://api.ringostat.net/calls/list?export_type=json&shy;&fields=calldate,caller,dst,call_type,disposition,billsec,recording", requestOptions)
-            .then(response => response.text())
-            .then(result => console.log(result))
-            .catch(error => console.log('error', error));
+		fetch("https://api.ringostat.net/calls/list?export_type=json&auth-key=ahWrEDgck4jXGa0lA9qjCX8iMtPtKMMD&from=2022-05-18%2000:00:00&to=2022-05-19%2023:59:59&fields=calldate,caller,dst,disposition,call_type", { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				loading: false,
+				fetchedData: json
+			})
+		})
 	}
 
 	render(){
@@ -34,21 +33,52 @@ class RingoStat extends React.Component {
                     <table>
                         <tbody>
                             <tr>
+                                <th>
+                                    <label className="container-check">
+                                        <input type="checkbox"></input>
+                                        {/* <input onChange={() => this.checkAll()} checked={this.state.selectAll}  type="checkbox"></input> */}
+                                        <span className="checkmark"></span>
+                                    </label>
+                                </th>
                                 <th>Дата звонка</th>
                                 <th>Клиент</th>
                                 <th>Сотрудник</th>
                                 <th>Тип звонка</th>
                                 <th>Статус</th>
                             </tr>
-                            {/* {
+                            {
                                 fetchedData.length > 0 && fetchedData.map((call, index) => {
                                     return <tr key={index}>
                                         <td>
-                                            call.date
+                                            <label className="container-check">
+                                                <input type="checkbox"></input>
+                                                {/* <input id={index} onChange={(e) => this.getStatus(e)} checked={this.state.checkBoxes[index] || false} type="checkbox"></input> */}
+                                                <span className="checkmark"></span>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            {call.calldate}
+                                        </td>
+                                        <td>
+                                            {call.caller}
+                                        </td>
+                                        <td>
+                                            {call.dst}
+                                        </td>
+                                        <td>
+                                            {call.call_type === "in" ? "Входящий" : "Исходящий"}
+                                        </td>
+                                        <td>
+                                            {call.disposition === "BUSY" && "Занято"}
+                                            {call.disposition === "ANSWERED" && "Отвечен"}
+                                            {call.disposition === "NO ANSWER" && "Нет ответа"}
+                                            {call.disposition === "REPEATED" && "Повторный"}
+                                            {call.disposition === "PROPER" && "Целевой"}
+                                            {call.disposition === "VOICEMAIL" && "Голосовая почта"}
                                         </td>
                                     </tr>
                                 })
-                            } */}
+                            }
                         </tbody>
                     </table>
                 </div>

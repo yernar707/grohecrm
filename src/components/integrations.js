@@ -21,10 +21,10 @@ class Integrations extends React.Component {
                                 <Link to='' onClick={() => this.setState({ currentContent : 1 })} className={`clickable ` + (this.state.currentContent === 1 && "active-clickable")}>1С</Link>
                             </div>
                             <div className='sidebar-item'>
-                                <Link to='' onClick={() => this.setState({ currentContent : 2 })} className={`clickable ` + (this.state.currentContent === 7 && "active-clickable")}> RingoStat </Link>
+                                <Link to='' onClick={() => this.setState({ currentContent : 2 })} className={`clickable ` + (this.state.currentContent === 2 && "active-clickable")}> RingoStat </Link>
                             </div>
                             <div className='sidebar-item'>
-                                <Link to='' onClick={() => this.setState({ currentContent : 3 })} className={`clickable ` + (this.state.currentContent === 2 && "active-clickable")}>WebKassa</Link>
+                                <Link to='' onClick={() => this.setState({ currentContent : 3 })} className={`clickable ` + (this.state.currentContent === 3 && "active-clickable")}>WebKassa</Link>
                             </div>
                         </div>
                         <div className='col-9 analytics-content'>
