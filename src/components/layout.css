@@ -1287,3 +1287,14 @@ table th:last-child::after, table th:first-child::after {
 .display-none {
   display: none !important;
 }
+
+.admin-buttons {
+  display: flex;
+  width: 100%;
+  padding: 5px;
+  justify-content: space-around;
+}
+
+.admin-buttons .default-button {
+  padding: 2px;
+}

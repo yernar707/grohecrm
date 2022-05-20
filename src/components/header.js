@@ -14,10 +14,6 @@ class Header extends React.Component {
   }
 
   render() {
-    function isActive( {isCurrent} ) {
-      return isCurrent ? {className: "active-nav-link"} : null
-    }
-    console.log(this.state.user)
     return (
       <header
         style={{
