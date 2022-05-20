@@ -707,6 +707,7 @@ h4 {
   border-radius: 15px;
   text-align: center;
   padding: 25px 40px;
+  overflow-y: scroll;
 }
 
 .sklad-modal-title {
@@ -766,11 +767,11 @@ table tr:last-child {
 }
 
 table th:first-child, table td:first-child {
-  text-align: end;
+  /* text-align: end; */
 }
 
 table th:last-child::after, table th:first-child::after {
-  width: 0;
+  /* width: 0; */
 }
 
 .container-check {
@@ -872,6 +873,18 @@ table th:last-child::after, table th:first-child::after {
   padding: 0px 15px;
 }
 
+.default-blue-button:disabled, .default-white-button:disabled {
+  background: #E5E5E5;
+  color: #5b5b5b;
+}
+
+.default-button {
+  font-weight: 300;
+  border: none;
+  padding: 0px 15px;
+  border-radius: 5px;
+}
+
 .default-input {
   width: 100%;
   background: #FFFFFF;
@@ -898,6 +911,7 @@ table th:last-child::after, table th:first-child::after {
   border-radius: 15px;
   text-align: center;
   padding: 25px 40px;
+  overflow-y: scroll;
 }
 
 .new-good-modal-title {
@@ -946,6 +960,7 @@ table th:last-child::after, table th:first-child::after {
   border-radius: 15px;
   text-align: center;
   padding: 25px 40px;
+  overflow-y: scroll;
 }
 
 .sdelka-modal-title {
@@ -964,6 +979,24 @@ table th:last-child::after, table th:first-child::after {
 
 .grey-bg {
   background-color: #F4F4F4;
+}
+
+.sklad-quantity-button {
+  border: none;
+  background: transparent;
+  text-decoration: underline;
+}
+
+.sklad-quantity-input {
+  width: 100px;
+  background: #FFFFFF;
+  border-radius: 5px;
+  height: 100%;
+  padding: 5px 10px;
+  color:#929292;
+  margin-right: 10px;
+  border: none;
+  font-weight: 300;
 }
 
 .sklad-modal-search {
@@ -1217,4 +1250,40 @@ table th:last-child::after, table th:first-child::after {
   line-height: 48px;
   text-align: center;
   color: #00D669;
+}
+
+.calls-filter {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calls-filter .col-3, .calls-filter .col-6 {
+  padding: 5px;
+}
+
+.calls-filter .default-input {
+  height: 45px;
+}
+
+.calls-table th p{
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  margin: 0;
+}
+
+.calls-table th svg{
+  margin-left: 15px;
+}
+
+.calls-table table th:first-child, .calls-table table td:first-child {
+  text-align: start;
+}
+
+.calls-table table th:last-child::after, .calls-table table th:first-child::after {
+  width: 0.5px;
+}
+
+.display-none {
+  display: none !important;
 }

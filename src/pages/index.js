@@ -46,9 +46,9 @@ class IndexPage extends React.Component {
                 <h4>Войдите в свой аккаунт</h4>
                 <div>
                   <label>
-                    E-mail
+                    Логин
                   </label>
-                  <input type={"email"} name="username" onChange={this.handleUpdate} />
+                  <input type={"text"} name="username" onChange={this.handleUpdate} />
                 </div>   
                 <div>
                   <label>

@@ -34,7 +34,7 @@ class Desktop extends React.Component {
                 </div>
                 <div className='desktop-content'>
                     <div className='hello-user'>
-                        <h1>{ getUser().username }</h1>
+                        <h1>{ getUser().firstName + " " + getUser().lastName }</h1>
                     </div>
                     <div className='default-container'>
                         <div className='flex-row'>

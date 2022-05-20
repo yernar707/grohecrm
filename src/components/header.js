@@ -19,7 +19,7 @@ const Header = ({ siteTitle }) => {
         justifyContent: `space-between`,
         flexDirection: `column`,
         width: 80,
-        position: `absolute`,
+        position: `fixed`,
         background: `#0F2B4B`,
         minHeight: 768,
         height: `100%`,
@@ -63,7 +63,7 @@ const Header = ({ siteTitle }) => {
             Склады
           </Link>
         </li>
-        { getUser().role === "admin" &&
+        { getUser().position.toLowerCase() === "admin" &&
         <li className="nav-item">
           <Link to="/main-page/staff" getProps={isActive}>
             <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">

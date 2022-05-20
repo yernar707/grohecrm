@@ -4,30 +4,19 @@ class Staff extends React.Component {
     
 
     state = {
+        fetchedData : [],
+        loading : true,
         selectAll : false,
         checkBoxes : [],
         addStaff : false,
         filteredStaff : [],
-        filterStr : ""
+        filterStr : "",
+        currentUser : [],
+        currentUserId : "",
     }
-
-    staff = [{
-        name : "John Snow",
-        position : "Менеджер по продажам",
-        phone : "87085639061",
-        email : "john@mail.com",
-        role : "marketing"
-    }, {
-        name : "Rob Stark",
-        position : "Менеджер по складам",
-        phone : "87777777777",
-        email : "rob@mail.com",
-        role : "stocking"
-    }]
-
     componentDidMount() {
-        let temp = new Array(this.staff.length).fill(false)
-        this.setState({ checkBoxes : temp, filteredStaff : this.staff })
+        // let temp = new Array(this.staff.length).fill(false)
+        // this.setState({ checkBoxes : temp, filteredStaff : this.staff })
     }
 
     checkState() {
@@ -58,40 +47,160 @@ class Staff extends React.Component {
         }
     }
 
+    addStaff() {
+        let valid = true
+        this.state.fetchedData.forEach(user => {
+            if(user.login === this.login.value){
+                valid = false
+                alert("Пользователь с таким логином существует")
+            }
+        })
+        valid && fetch('https://crohe.herokuapp.com/api/staff/new/', {
+            method: 'post',
+            headers: {'Content-Type':'application/json'},
+            mode: 'cors',
+            body: JSON.stringify({
+                "firstName": this.firstName.value,
+                "lastName": this.lastName.value,
+                "email": this.email.value,
+                "position" : this.position.value,
+                "phoneNumber" : this.phoneNumber.value,
+                "login" : this.login.value,
+                "password" : this.password.value
+            })
+        })
+        .then(
+            alert(this.firstName.value + " добавлен")
+        )
+        .then(
+            this.setState({
+                addStaff : false
+            }),
+            window.location.reload()
+        )
+    }
+
+    deleteUser(id) {
+        if(window.confirm('Вы уверены что хотите удалить сотрудника? После удаления его невозможно восстановить')){
+            var url = `https://crohe.herokuapp.com/api/staff/delete/${id}`
+            fetch(url, { 
+                method: 'delete', 
+            })
+            .then(
+                alert("Сотрудник удален")
+            )
+        } 
+    }
+
+    updateUser(id) {
+        let valid = true
+        this.state.fetchedData.forEach(user => {
+            if(user.login !== this.state.currentUser.login && user.login === this.loginUpdate.value){
+                valid = false
+                alert("Пользователь с таким логином существует")
+            }
+        })
+        let password = this.state.currentUser.password
+        if(this.newPasswordCheck.checked)
+            password = this.passwordUpdate.value
+        let body = {
+            "firstName": this.firstNameUpdate.value,
+            "lastName": this.lastNameUpdate.value,
+            "email": this.emailUpdate.value,
+            "position": this.state.currentUser.position, 
+            "phoneNumber" : this.phoneNumberUpdate.value,
+            "login" : this.loginUpdate.value,
+            "password" : password
+        }
+        valid && fetch(`https://crohe.herokuapp.com/api/staff/update/${id}`, {
+            method: 'put',
+            headers: {'Content-Type':'application/json'},
+            mode: 'cors',
+            body: JSON.stringify(body)
+        })
+        .then(
+            alert(this.firstNameUpdate.value + " изменен")
+        )
+        .then(
+            this.setState({
+                addStaff : false
+            }),
+            window.location.reload()
+        )
+    }
+
 	render(){
+        var url = `https://crohe.herokuapp.com/api/staff/list`
+		this.state.loading && fetch(url, { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedData: json,
+                loading : false,
+                // checkBoxes: new Array(this.state.fetchedData.length).fill(false)
+            })
+        })
+
+        this.state.currentUserId && fetch(`https://crohe.herokuapp.com/api/staff/get/${this.state.currentUserId}`, {
+            method: 'get',
+        })
+        .then(response => {
+            return response.json();
+        })
+        .then(json => {
+            this.setState({
+                currentUser : json
+            })
+        })
+
         const filterStr = this.state.filterStr;
 
-        const filteredStaff = this.staff
-            .filter(e => e.name.toLowerCase().includes(filterStr.toLowerCase()))
+        const filteredStaff = this.state.fetchedData
+            .filter(e => e.firstName.toLowerCase().includes(filterStr.toLowerCase()) || e.lastName.toLowerCase().includes(filterStr.toLowerCase()))
+            .sort((a,b) => a.id > b.id ? 1 : -1)
             .map((employee, index) => <tr key={index}>
-                <td>
+                {/* <td>
                     <label className="container-check">
                         <input id={index} onChange={(e) => this.getStatus(e)} checked={this.state.checkBoxes[index] || false} type="checkbox"></input>
                         <span className="checkmark"></span>
                     </label>
-                </td>
+                </td> */}
                 <td>
-                    {employee.name}
+                    {employee.firstName + " " + employee.lastName}
                 </td>
                 <td>
                     {employee.position}
                 </td>
                 <td>
-                    {employee.phone}
+                    {employee.phoneNumber}
                 </td>
                 <td>
                     {employee.email}
                 </td>
                 <td>
-                    {employee.role}
+                    {employee.login}
                 </td>
+                <td>
+                    {employee.password}
+                </td>
+                <td>
+                    <div className='flex-row'>
+                        <button onClick={() => this.setState( { currentUserId : employee.id })} className='default-blue-button col-4'>Изменить</button>
+                        <form className='col-5'>
+                            <button disabled={employee.position.toLowerCase() === "admin"} onClick={() => this.deleteUser(employee.id)} className='default-white-button'>Удалить</button>
+                        </form>         
+                    </div>
+                     </td>
             </tr>
-            
-          )
+        )
     
 		return(
             <div className='sklad-page'>
-                {this.state.addStaff && <div onClick={() => this.setState({ addStaff : false })} className='dark-bg'></div>}
+                {(this.state.addStaff || this.state.currentUserId !== "") && <div onClick={() => this.setState({ addStaff : false, currentUserId : "" })} className='dark-bg'></div>}
                 <div className='default-header'>
                     <div className='default-container' style={{height: `100%`}}>
                         <div className='flex-row'>
@@ -110,7 +219,7 @@ class Staff extends React.Component {
                                 </form>
                             </div>
                             <div className='col-5 flex-item flex-item-last'>
-                                <p className='sklady-quantity'>3 сотрудника</p>
+                                <p className='sklady-quantity'>{filteredStaff.length} сотрудника</p>
                                 <button className='three-dots'>•••</button>
                                 <button onClick={() => this.setState({ addStaff : true })} className='new-sklad-button'>+ ДОБАВИТЬ СОТРУДНИКА</button>
                                 <div className='three-dots-dropdown'>
@@ -128,12 +237,12 @@ class Staff extends React.Component {
                         <table>
                             <tbody>
                                 <tr>
-                                    <th>
+                                    {/* <th>
                                         <label className="container-check">
                                             <input onChange={() => this.checkAll()} checked={this.state.selectAll}  type="checkbox"></input>
                                             <span className="checkmark"></span>
                                         </label>
-                                    </th>
+                                    </th> */}
                                     <th>
                                         имя и фамилия
                                     </th>
@@ -147,10 +256,16 @@ class Staff extends React.Component {
                                         email
                                     </th>
                                     <th>
-                                        Роль
+                                        Логин
+                                    </th>
+                                    <th>
+                                        пароль
+                                    </th>
+                                    <th>
+                                        Действие
                                     </th>
                                 </tr>
-                                {filteredStaff}
+                                { !this.state.loading && filteredStaff}
                             </tbody>
                         </table>
                     </div>
@@ -163,32 +278,76 @@ class Staff extends React.Component {
                                 <p>Добавить сотрудника</p>
                             </div>
                             <div className='new-good-modal-content'>
-                                <form>
+                                <form >
                                     <div>
-                                        <input className='default-input' type="text" placeholder="Имя и Фамилия"/>
+                                        <input ref={(ref) => {this.firstName = ref}} className='default-input' type="text" placeholder="Имя"/>
                                     </div>
                                     <div>
-                                        <input className='default-input' type="text" placeholder="Адрес почты"/>
+                                        <input ref={(ref) => {this.lastName = ref}} className='default-input' type="text" placeholder="Фамилия"/>
                                     </div>
                                     <div>
-                                        <select className='default-input'>
-                                            <option value="skladmen">
+                                        <input ref={(ref) => {this.email = ref}} className='default-input' type="text" placeholder="Адрес почты"/>
+                                    </div>
+                                    <div>
+                                        <select ref={(ref) => {this.position = ref}} className='default-input'>
+                                            <option value="StorageManager">
                                                 Менеджер по складу
                                             </option>
-                                            <option value="Skladmen 2">
+                                            <option value="SaleManager">
                                                 Менеджер по продажам
                                             </option>
                                         </select>
                                     </div>
                                     <div>
-                                        <input className='default-input' type="text" placeholder="Логин"/>
+                                        <input ref={(ref) => {this.phoneNumber = ref}} className='default-input' type="text" placeholder="Номер телефона"/>
                                     </div>
                                     <div>
-                                        <input className='default-input' type="text" placeholder="Пароль"/>
+                                        <input ref={(ref) => {this.login = ref}} className='default-input' type="text" placeholder="Логин"/>
+                                    </div>
+                                    <div>
+                                        <input ref={(ref) => {this.password = ref}} className='default-input' type="text" placeholder="Пароль"/>
                                     </div>
                                     <div className='new-good-buttons'>
-                                        <input className='default-blue-button' type="submit" value="Добавить" />
+                                        <input className='default-blue-button' onClick={() => this.addStaff()} type="button" value="Добавить" />
                                         <input className='default-white-button' type="reset" onClick={() => this.setState({ addStaff : false })} value="Отмена" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                    {
+                        this.state.currentUserId !== "" && this.state.currentUser.length !== 0 && <div className='new-good-modal'>
+                            <span onClick={() => this.setState({ currentUserId : "" })} className='close-modal'>×</span>
+                            <div className='new-good-modal-title'>
+                                <p>Изменить сотрудника</p>
+                            </div>
+                            <div className='new-good-modal-content'>
+                                <form>
+                                    <div>
+                                        <input ref={(ref) => {this.firstNameUpdate = ref}} defaultValue={this.state.currentUser.firstName} className='default-input' type="text" placeholder="Имя"/>
+                                    </div>
+                                    <div>
+                                        <input ref={(ref) => {this.lastNameUpdate = ref}} defaultValue={this.state.currentUser.lastName} className='default-input' type="text" placeholder="Фамилия"/>
+                                    </div>
+                                    <div>
+                                        <input ref={(ref) => {this.emailUpdate = ref}} defaultValue={this.state.currentUser.email} className='default-input' type="text" placeholder="Адрес почты"/>
+                                    </div>
+                                    <div>
+                                        <input ref={(ref) => {this.phoneNumberUpdate = ref}} defaultValue={this.state.currentUser.phoneNumber} className='default-input' type="text" placeholder="Номер телефона"/>
+                                    </div>
+                                    <div>
+                                        <input ref={(ref) => {this.loginUpdate = ref}} defaultValue={this.state.currentUser.login} className='default-input' type="text" placeholder="Логин"/>
+                                    </div>
+                                    <div>
+                                        <input ref={(ref) => {this.passwordUpdate = ref}} className='default-input' type="password" placeholder="Новый пароль"/>
+                                    </div>
+                                    <div className='flex-row' style={{alignItems: 'baseline'}}>
+                                        <label style={{marginRight: 15}}>Сохранить новый пароль</label>
+                                        <input ref={(ref) => {this.newPasswordCheck = ref}} type="checkbox"/>
+                                    </div>
+                                    <div className='new-good-buttons'>
+                                        <input className='default-blue-button' onClick={() => this.updateUser(this.state.currentUserId)} type="button" value="Сохранить" />
+                                        <input className='default-white-button' type="reset" onClick={() => this.setState({ currentUserId : "" })} value="Отмена" />
                                     </div>
                                 </form>
                             </div>

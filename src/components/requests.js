@@ -1,4 +1,5 @@
 import React from 'react'
+import { getUser } from "../services/auth"
 
 class Requests extends React.Component {
     
@@ -17,7 +18,7 @@ class Requests extends React.Component {
             id : 1,
             src : "John Snow",
             dest : "Rob Stark",
-            status : "Обрабатывается",
+            status : "processing",
             sklad : "Склад 1",
             article : "a020a2020a",
             quantity : 5,
@@ -27,7 +28,7 @@ class Requests extends React.Component {
             id : 2,
             src : "John Snow",
             dest : "Rob Stark",
-            status : "Принят",
+            status : "accepted",
             sklad : "Склад 1",
             article : "b020a2020a",
             quantity : 12,
@@ -37,7 +38,7 @@ class Requests extends React.Component {
             id : 3,
             src : "John Snow",
             dest : "Rob Stark",
-            status : "Обрабатывается",
+            status : "done",
             sklad : "Склад 1",
             article : "с020a2020a",
             quantity : 8,
@@ -47,7 +48,7 @@ class Requests extends React.Component {
             id : 4,
             src : "John Snow",
             dest : "Rob Stark",
-            status : "Обрабатывается",
+            status : "processing",
             sklad : "Склад 2",
             article : "d020a2020a",
             quantity : 5,
@@ -57,7 +58,7 @@ class Requests extends React.Component {
             id : 5,
             src : "John Snow",
             dest : "Rob Stark",
-            status : "Обрабатывается",
+            status : "processing",
             sklad : "Склад 2",
             article : "d020a2020a",
             quantity : 5,
@@ -67,7 +68,7 @@ class Requests extends React.Component {
             id : 6,
             src : "John Snow",
             dest : "Rob Stark",
-            status : "Обрабатывается",
+            status : "processing",
             sklad : "Склад 3",
             article : "e020a2020a",
             quantity : 5,
@@ -131,7 +132,9 @@ class Requests extends React.Component {
                     {r.dest}
                 </td>
                 <td>
-                    {r.status}
+                    {r.status === "processing" && "Обрабатывается"}
+                    {r.status === "accepted" && "Принят"}
+                    {r.status === "done" && "Завершен"}
                 </td>
                 <td>
                     {r.sklad}
@@ -141,6 +144,12 @@ class Requests extends React.Component {
                 </td>
                 <td>
                     {r.quantity}
+                </td>
+                <td className='flex-row'>
+                    {r.status === "processing" && <button className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Принять</button>}
+                    {r.status === "accepted" && <button className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Завершить</button>}
+                    {r.status === "done" && <button className={`default-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`} disabled>Завершен</button>}
+                    { getUser().position.toLowerCase() === "admin" && <button className='default-white-button'>Удалить</button>}
                 </td>
             </tr>)
 		return(
@@ -211,6 +220,9 @@ class Requests extends React.Component {
                                     </th>
                                     <th>
                                         Количество
+                                    </th>
+                                    <th>
+                                        Действие
                                     </th>
                                 </tr>
                                 {filteredRequests}

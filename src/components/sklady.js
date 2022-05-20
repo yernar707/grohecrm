@@ -12,6 +12,9 @@ class Sklady extends React.Component {
         filterStr : "",
         currentSklad : [],
         filterGoods : "",
+        goodId: '',
+        fetchedData : [],
+        loading: true
     }
 
     sklady = [
@@ -42,7 +45,7 @@ class Sklady extends React.Component {
             article : "a020a202a",
             name : "Tayap",
             parameter : "for bath",
-            parameter2 : "metal" 
+            parameter2 : "metal",  quantity : 500
         },
         {
             id : 2,
@@ -50,7 +53,7 @@ class Sklady extends React.Component {
             article : "b020a202a",
             name : "Tayap",
             parameter : "for bath",
-            parameter2 : "metal" 
+            parameter2 : "metal",  quantity : 500
         },
         {
             id : 3,
@@ -58,7 +61,7 @@ class Sklady extends React.Component {
             article : "c020a202a",
             name : "Tayap",
             parameter : "for bath",
-            parameter2 : "metal" 
+            parameter2 : "metal",  quantity : 500
         },
         {
             id : 4,
@@ -66,7 +69,7 @@ class Sklady extends React.Component {
             article : "d020a202a",
             name : "Tayap 2",
             parameter : "for bath",
-            parameter2 : "metal" 
+            parameter2 : "metal",  quantity : 500
         },
         {
             id : 5,
@@ -74,7 +77,143 @@ class Sklady extends React.Component {
             article : "e020a202a",
             name : "Tayap 3",
             parameter : "for bath",
-            parameter2 : "metal" 
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
+        },
+        {
+            id : 5,
+            skladId : 1,
+            article : "e020a202a",
+            name : "Tayap 3",
+            parameter : "for bath",
+            parameter2 : "metal",  quantity : 500
         },
     ]
 
@@ -114,10 +253,32 @@ class Sklady extends React.Component {
         this.setState({ checkBoxes : temp })
     }
 
+    addStorage() {
+        
+    }
+
 	render(){
+        
+        var url = `https://crohe.herokuapp.com/api/storage/list`
+		this.state.loading && fetch(url, { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedData: json,
+                loading : false,
+                // checkBoxes: new Array(this.state.fetchedData.length).fill(false)
+            })
+        })
+
+
         const filterStr = this.state.filterStr;
-        const filteredSklady = this.sklady
+        const filteredSklady = this.state.fetchedData
             .filter(s => s.name.toLowerCase().includes(filterStr.toLowerCase()))
+            .sort((a, b) => a.id > b.id ? 1 : -1)
             .map(s => <div key={s.id} className='col-3 sklad-column'>
                     <div className='card'>
                         <div className='sklad-title'>
@@ -130,7 +291,7 @@ class Sklady extends React.Component {
                              <p className='sklad-info'>
                                 {this.goods.filter(g => g.skladId === s.id).length} элементов
                              </p>
-                             <button onClick={() => {this.setState({ checkBoxes : [], currentSklad : this.sklady.filter(sklad => sklad.id === s.id) }, () => {this.setCheckBoxes()})}} className='sklad-show-button'>Показать</button>
+                             <button onClick={() => {this.setState({ goodId : '', checkBoxes : [], currentSklad : this.sklady.filter(sklad => sklad.id === s.id) }, () => {this.setCheckBoxes()})}} className='sklad-show-button'>Показать</button>
                         </div>
                     </div>
                 </div>
@@ -155,7 +316,11 @@ class Sklady extends React.Component {
                             {g.name}
                         </td>
                         <td>
-                            {g.parameter}
+                            { this.state.goodId !== index && <button className='sklad-quantity-button'  onClick={() => this.setState({ goodId : index })}>{g.quantity}</button>}
+                            { this.state.goodId === index && <form>
+                                <input className='sklad-quantity-input' type='number' value={g.quantity}></input>
+                                <input className='default-blue-button' type='submit' value='Сохранить'></input>
+                            </form>}
                         </td>
                         <td>
                             {g.parameter}
@@ -189,14 +354,14 @@ class Sklady extends React.Component {
                             <div className='col-5 flex-item flex-item-last'>
                                 <p className='sklady-quantity'>{this.goods.length} элементов</p>
                                 <button className='three-dots'>•••</button>
-                                { getUser().role === "admin" && <button onClick={() => this.setState({ addSklad : true })} className='new-sklad-button'>+ ДОБАВИТЬ СКЛАД</button>}
+                                { getUser().position.toLowerCase() === "admin" && <button onClick={() => this.setState({ addSklad : true })} className='new-sklad-button'>+ ДОБАВИТЬ СКЛАД</button>}
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className='layout-div body-element default-content'>
                     <div className='add-good'>
-                        <button className='default-blue-button' onClick={() => this.setState({ addGood : true })}>+ ДОБАВИТЬ ТОВАР</button>
+                        <button className='default-blue-button' disabled={this.state.fetchedData.length === 0} onClick={() => this.setState({ addGood : true })}>+ ДОБАВИТЬ ТОВАР</button>
                     </div>
                     <div className='default-container'>
                         <div className='flex-row'>
@@ -286,7 +451,7 @@ class Sklady extends React.Component {
                         </div>
                         <div className='sklad-modal-content'>
                             <p className='skladmen-name'>
-                                {this.state.currentSklad[0].manager } { getUser().role === "admin" && !this.state.changeSkladmen && <button onClick={() => this.setState({ changeSkladmen : true })} className='default-blue-button'>Изменить</button> } 
+                                {this.state.currentSklad[0].manager } { getUser().position.toLowerCase() === "admin" && !this.state.changeSkladmen && <button onClick={() => this.setState({ changeSkladmen : true })} className='default-blue-button'>Изменить</button> } 
                             </p>
                             { this.state.changeSkladmen && <form style={{
                                 width: 350, margin: "auto", padding: 25
@@ -338,7 +503,7 @@ class Sklady extends React.Component {
                                         </th>
                                         <th>Артикуль</th>
                                         <th>название</th>
-                                        <th>параметры</th>
+                                        <th>Количество</th>
                                         <th>параметры</th>
                                         <th>параметры</th>
                                     </tr>
