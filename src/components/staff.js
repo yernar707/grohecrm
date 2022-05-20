@@ -1,7 +1,6 @@
 import React from 'react'
 
 class Staff extends React.Component {
-    
 
     state = {
         fetchedData : [],
