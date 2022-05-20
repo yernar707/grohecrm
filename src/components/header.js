@@ -9,6 +9,8 @@ const Header = ({ siteTitle }) => {
     return isCurrent ? {className: "active-nav-link"} : null
   }
 
+  console.log(getUser() === null)
+
   return (
     <header
       style={{

@@ -40,10 +40,9 @@ export const handleLogin = ({ username, password, data }) => {
   });
   if(!enter){
     setUser({});
-    alert("Неправильный логин и/или пароль")
+    return false
   }
 
-  return false
 }
 
 export const isLoggedIn = () => {

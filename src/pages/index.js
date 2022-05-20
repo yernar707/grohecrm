@@ -18,7 +18,10 @@ class IndexPage extends React.Component {
 
   handleSubmit = event => {
     event.preventDefault()
-    handleLogin(this.state)
+    if(handleLogin(this.state) !== false)
+      navigate(`/main-page/desktop`)
+    else
+      alert("Неправильный логин и/или пароль")
   }
   
   render() {
@@ -39,7 +42,6 @@ class IndexPage extends React.Component {
                 method="post"
                 onSubmit={event => {
                   this.handleSubmit(event)
-                  navigate(`/main-page/desktop`)
                 }}
               >
                 <p>Добро пожаловать</p>
