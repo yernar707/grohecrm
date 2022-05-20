@@ -22,7 +22,7 @@ fetch(url, {
 })
 
 export const handleLogin = ({ username, password, data }) => {
-  while(fetchedData.length == 0){}
+  while(fetchedData.length === 0){}
   fetchedData.forEach(user => {
     if(user.login === username && user.password === password) {
       enter = true
@@ -49,7 +49,7 @@ export const handleLogin = ({ username, password, data }) => {
 export const isLoggedIn = () => {
   const user = getUser()
 
-  return !!user.login
+  return !!  user.login
 }
 
 export const logout = callback => {
