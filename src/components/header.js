@@ -10,6 +10,7 @@ class Header extends React.Component {
   }
 
   render() {
+    this.setState({ position : getUser().position })
     function isActive( {isCurrent} ) {
       return isCurrent ? {className: "active-nav-link"} : null
     }
