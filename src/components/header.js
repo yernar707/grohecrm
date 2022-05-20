@@ -9,8 +9,6 @@ const Header = ({ siteTitle }) => {
     return isCurrent ? {className: "active-nav-link"} : null
   }
 
-  console.log(getUser() === null)
-
   return (
     <header
       style={{
@@ -65,7 +63,7 @@ const Header = ({ siteTitle }) => {
             Склады
           </Link>
         </li>
-        { getUser().position.toLowerCase() === "admin" &&
+        { Object.keys(getUser()).length !== 0 && getUser().position.toLowerCase() === "admin" &&
         <li className="nav-item">
           <Link to="/main-page/staff" getProps={isActive}>
             <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
