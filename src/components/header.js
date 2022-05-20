@@ -5,17 +5,14 @@ import { logout, getUser } from "../services/auth"
 
 class Header extends React.Component {
 
-  state = {
-    position : getUser().position
-  }
 
   render() {
     function isActive( {isCurrent} ) {
       return isCurrent ? {className: "active-nav-link"} : null
     }
 
-    const {position} = this.state 
-
+    const position = getUser().position
+    console.log(position)
     return (
       <header
         style={{
