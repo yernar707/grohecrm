@@ -82,9 +82,10 @@ class Sklady extends React.Component {
         )
         .then(
             this.setState({
-                addSklad : false
+                addSklad : false,
+                loading : true
             }),
-            window.location.reload()
+            // window.location.reload()
         )
     }
 
@@ -112,9 +113,11 @@ class Sklady extends React.Component {
         )
         .then(
             this.setState({
-                addStaff : false
+                currentSklad : [],
+                editSklad : false,
+                staffLoading : true
             }),
-            window.location.reload()
+            // window.location.reload()
         )
     }
 
@@ -156,9 +159,10 @@ class Sklady extends React.Component {
         )
         .then(
             this.setState({
-                addGood : false
+                addGood : false,
+                productLoading : true
             }),
-            window.location.reload()
+            // window.location.reload()
         )
     }
 
@@ -222,7 +226,11 @@ class Sklady extends React.Component {
             .map(s => <option key={s.id} value={s.id}>{s.firstName + ` ` + s.lastName}</option>)
 
         const filterStr = this.state.filterStr;
-        const filteredSklady = this.state.fetchedData
+        var filteredSklady = this.state.fetchedData
+        if(getUser().position == "StorageManager") {
+            filteredSklady = filteredSklady.filter(sklad => sklad.staff.id === getUser().id)
+        }
+        filteredSklady = filteredSklady
             .filter(s => s.name.toLowerCase().includes(filterStr.toLowerCase()))
             .sort((a, b) => a.id > b.id ? 1 : -1)
             .map(s => <div key={s.id} className='col-3 sklad-column'>
@@ -313,7 +321,7 @@ class Sklady extends React.Component {
                 </div>
                 <div className='layout-div body-element default-content'>
                     <div className='add-good'>
-                        <button className='default-blue-button' disabled={this.state.fetchedData.length === 0} onClick={() => this.setState({ addGood : true })}>+ ДОБАВИТЬ ТОВАР</button>
+                        { getUser().position !== "SaleManager" && <button className='default-blue-button' disabled={this.state.fetchedData.length === 0} onClick={() => this.setState({ addGood : true })}>+ ДОБАВИТЬ ТОВАР</button>}
                     </div>
                     <div className='default-container'>
                         <div className='flex-row'>

@@ -1,4 +1,6 @@
+import { navigate } from 'gatsby'
 import React from 'react'
+import { getUser } from '../services/auth'
 
 class Staff extends React.Component {
 
@@ -14,6 +16,8 @@ class Staff extends React.Component {
         currentUserId : "",
     }
     componentDidMount() {
+        if(getUser().position !== "Admin")
+            navigate('/main-page/desktop')
         // let temp = new Array(this.staff.length).fill(false)
         // this.setState({ checkBoxes : temp, filteredStaff : this.staff })
     }

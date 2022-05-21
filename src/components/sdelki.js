@@ -6,12 +6,107 @@ class Sdelki extends React.Component {
     state = {
         showQuickAdd : false,
         addSdelka : false,
-        sdelkaId: 0
+        sdelkaId: 0,
+        fetchedData : [],
+        loading : true,
+        currentTransaction : [],
     }
+
+    addTransactionQuick() {
+        let valid = true
+        this.state.fetchedData.forEach(transaction => {
+            if(transaction.name === this.nameQuick.value){
+                valid = false
+                alert("Сделка с таким названием существует")
+            }
+        })
+        valid && fetch('https://crohe.herokuapp.com/api/transaction/new/', {
+            method: 'post',
+            headers: {'Content-Type':'application/json'},
+            mode: 'cors',
+            body: JSON.stringify({
+                "name": this.nameQuick.value,
+                "price": this.priceQuick.value,
+                "phoneNumber": this.phoneNumberQuick.value,
+                "email" : this.emailQuick.value,
+                "companyName" : this.companyNameQuick.value,
+                "address" : this.addressQuick.value
+            })
+        })
+        .then(
+            alert(this.nameQuick.value + " добавлен")
+        )
+        .then(
+            this.setState({
+                loading : true,
+                showQuickAdd: false
+            }),
+        )
+    }
+
+    addTransaction() {
+        let valid = true
+        this.state.fetchedData.forEach(transaction => {
+            if(transaction.name === this.name.value){
+                valid = false
+                alert("Сделка с таким названием существует")
+            }
+        })
+        valid && fetch('https://crohe.herokuapp.com/api/transaction/new/', {
+            method: 'post',
+            headers: {'Content-Type':'application/json'},
+            mode: 'cors',
+            body: JSON.stringify({
+                "name": this.name.value,
+                "price": this.price.value,
+                "phoneNumber": this.phoneNumber.value,
+                "email" : this.email.value,
+                "companyName" : this.companyName.value,
+                "address" : this.address.value
+            })
+        })
+        .then(
+            alert(this.name.value + " добавлен")
+        )
+        .then(
+            this.setState({
+                addSdelka : false,
+                loading : true
+            }),
+        )
+    }
+
+    deleteTransaction(id) {
+        if(window.confirm('Вы уверены что хотите удалить сделку? После удаления его невозможно восстановить')){
+            var url = `https://crohe.herokuapp.com/api/transaction/delete/${id}`
+            fetch(url, { 
+                method: 'delete', 
+            })
+            .then(
+                alert("Сделка удалена"),
+                this.setState({ loading : true, currentTransaction: []})
+            )
+        } 
+    }
+
 	render(){
+        var url = `https://crohe.herokuapp.com/api/transaction/list`
+		this.state.loading && fetch(url, { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedData: json,
+                loading : false,
+            })
+        })
+        
 		return(
             <div className='sdelki-page'>
-                {( this.state.addSdelka || this.state.sdelkaId !== 0 ) && <div onClick={() => this.setState({ addSdelka : false })} className='dark-bg'></div>}
+                {( this.state.addSdelka || this.state.currentTransaction.length !== 0 ) && <div onClick={() => this.setState({ addSdelka : false, currentTransaction : [] })} className='dark-bg'></div>}
                 <div className='default-header'>
                     <div className='default-container' style={{height: `100%`}}>
                         <div className='flex-row'>
@@ -30,8 +125,8 @@ class Sdelki extends React.Component {
                                 </form>
                             </div>
                             <div className='col-5 flex-item flex-item-last'>
-                                <p className='sdelki-quantity'>0 сделок: </p>
-                                <p className='sdelki-money'>0 тенге</p>
+                                <p className='sdelki-quantity'>{this.state.fetchedData.length} сделок: </p>
+                                <p className='sdelki-money'>{this.state.fetchedData.reduce((partialSum, a) => partialSum + a.price, 0)} тенге</p>
                                 <button className='three-dots'>•••</button>
                                 <button className='settings-button'>НАСТРОЙКА</button>
                                 <button onClick={() => this.setState({ addSdelka : true })} className='new-sdelka-button'>+ НОВАЯ СДЕЛКА</button>
@@ -47,10 +142,30 @@ class Sdelki extends React.Component {
                                     первичный контакт
                                 </div>
                                 <div className='column-subtitle'>
-                                    0 сделок: 0 тенге
+                                    {this.state.fetchedData.length} сделок: {this.state.fetchedData.reduce((partialSum, a) => partialSum + a.price, 0)} тенге
                                 </div>
                                 <hr></hr>
-                                <div className='sdelka'>
+                                {
+                                    !this.state.loading && this.state.fetchedData.map(transaction => 
+                                        <div key={transaction.id} className='sdelka'>
+                                            <div className='card'>
+                                                <div className='sdelka-title'>
+                                                    {transaction.name}
+                                                </div>
+                                                <div className='sdelka-company'>
+                                                    Компания: {transaction.companyName}
+                                                </div>
+                                                <div className='sdelka-price'>
+                                                    Бюджет: {transaction.price} тг
+                                                </div>
+                                                <div className='sdelka-show'>
+                                                    <span onClick={() => this.setState({ currentTransaction : transaction })}>Показать</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                }
+                                {/* <div className='sdelka'>
                                     <div className='card'>
                                         <div className='sdelka-title'>
                                             Текст
@@ -65,31 +180,30 @@ class Sdelki extends React.Component {
                                             <span onClick={() => this.setState({ sdelkaId : 1 })}>Показать</span>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                                 {
-                                    this.state.sdelkaId !== 0 && <div className='sdelka-modal'>
-                                        <span onClick={() => this.setState({ sdelkaId : 0 })} className='close-modal'>×</span>
+                                    this.state.currentTransaction.length !== 0 && <div className='sdelka-modal'>
+                                        <span onClick={() => this.setState({ currentTransaction : [] })} className='close-modal'>×</span>
                                         <div className='sdelka-modal-title'>
-                                            Текст
+                                            {this.state.currentTransaction.name}
                                         </div>
                                         <div className='sdelka-modal-content'>
                                             <div>
                                                 <h5>Основной контакт</h5>
                                                 <ul>
-                                                    <li>Текст</li>
-                                                    <li>Текст</li>
-                                                    <li>Текст</li>
+                                                    <li>Номер телефона: {this.state.currentTransaction.phoneNumber}</li>
+                                                    <li>Почта: {this.state.currentTransaction.email}</li>
                                                 </ul>
                                             </div>
                                             <div>
-                                                <h5>Компния контакта</h5>
+                                                <h5>Компания контакта</h5>
                                                 <ul>
-                                                    <li>Текст</li>
-                                                    <li>Текст</li>
+                                                    <li>Название: {this.state.currentTransaction.companyName}</li>
+                                                    <li>Адрес: {this.state.currentTransaction.address ? this.state.currentTransaction.address : "Жердің бір жері"}</li>
                                                 </ul>
                                             </div>
                                             <div>
-                                                <h5>Бюджет: 50000 тг</h5>
+                                                <h5>Бюджет: {this.state.currentTransaction.price} тг</h5>
                                             </div>
                                             <div>
                                                 <form>
@@ -102,11 +216,11 @@ class Sdelki extends React.Component {
                                                         </select>
                                                     </div>
                                                     <div>
-                                                        <input className='default-blue-button' type="submit" value="Сохранить" />
-                                                        <input onClick={() => this.setState({sdelkaId:0})} className='default-white-button' type="reset" value="Отменить" />
+                                                        <input className='default-blue-button' type="button" value="Сохранить" />
+                                                        <input onClick={() => this.deleteTransaction(this.state.currentTransaction.id)} className='default-white-button' type="button" value="Удалить" />
+                                                        <input onClick={() => this.setState({ currentTransaction : [] })} className='default-white-button' type="reset" value="Отменить" />
                                                     </div>
                                                 </form>
-                                                
                                             </div>
                                         </div>
                                     </div>
@@ -115,30 +229,30 @@ class Sdelki extends React.Component {
                                 {this.state.showQuickAdd && <div>
                                         <form className='quick-add-form'>
                                             <div>
-                                                <input name='sdelka-name' type='text' placeholder='Название'></input>
+                                                <input ref={(ref) => {this.nameQuick = ref}} name='sdelka-name' type='text' placeholder='Название'></input>
                                             </div>
                                             <div>
-                                                <input name='price' type='number' placeholder='0 тг'></input>
+                                                <input ref={(ref) => {this.priceQuick = ref}} name='price' type='number' placeholder='0 тг'></input>
                                             </div>
-                                            <div>
+                                            {/* <div>
                                                 <input name='contact-name' type='text' placeholder='Контакт: имя'></input>
+                                            </div> */}
+                                            <div>
+                                                <input ref={(ref) => {this.phoneNumberQuick = ref}} name='contact-phone' type='phone' placeholder='Контакт: телефон'></input>
                                             </div>
                                             <div>
-                                                <input name='contact-phone' type='phone' placeholder='Контакт: телефон'></input>
+                                                <input ref={(ref) => {this.emailQuick = ref}} name='contact-email' type='mail' placeholder='Контакт: E-mail'></input>
                                             </div>
                                             <div>
-                                                <input name='contact-email' type='mail' placeholder='Контакт: E-mail'></input>
+                                                <input ref={(ref) => {this.companyNameQuick = ref}} name='company-name' type='text' placeholder='Компания: название'></input>
                                             </div>
                                             <div>
-                                                <input name='company-name' type='text' placeholder='Компания: название'></input>
-                                            </div>
-                                            <div>
-                                                <input name='company-address' type='text' placeholder='Компания: адрес'></input>
+                                                <input ref={(ref) => {this.addressQuick = ref}} name='company-address' type='text' placeholder='Компания: адрес'></input>
                                             </div>
                                             <div className='flex-row'>
                                                 <div className='col-5'>
-                                                    <input className='submit-button' type='submit' onClick={() => this.setState({showQuickAdd:false})} value="Добавить"></input>
-                                                </div>
+                                                    <input className='submit-button' type='button' onClick={() => this.addTransactionQuick()} value="Добавить"></input>
+                                                </div> 
                                                 <div className='col-5'>
                                                     <input type='reset' className='cancel-button'  onClick={() => this.setState({showQuickAdd:false})} value={"Отменить"}></input>
                                                 </div>
@@ -185,28 +299,28 @@ class Sdelki extends React.Component {
                             <div className='new-good-modal-content'>
                                 <form>
                                     <div>
-                                        <input className='default-input' type="text" placeholder="Название"/>
+                                        <input ref={(ref) => {this.name = ref}} className='default-input' type="text" placeholder="Название"/>
                                     </div>
                                     <div>
-                                        <input className='default-input' type="number" placeholder="0 тг"/>
+                                        <input ref={(ref) => {this.price = ref}} className='default-input' type="number" placeholder="0 тг"/>
                                     </div>
-                                    <div>
+                                    {/* <div>
                                         <input className='default-input' type="text" placeholder="Контакт: имя"/>
+                                    </div> */}
+                                    <div>
+                                        <input ref={(ref) => {this.phoneNumber = ref}} className='default-input' type="text" placeholder="Контакт: телефон"/>
                                     </div>
                                     <div>
-                                        <input className='default-input' type="text" placeholder="Контакт: телефон"/>
+                                        <input ref={(ref) => {this.email = ref}} className='default-input' type="text" placeholder="Контакт: E-mail"/>
                                     </div>
                                     <div>
-                                        <input className='default-input' type="text" placeholder="Контакт: E-mail"/>
+                                        <input ref={(ref) => {this.companyName = ref}} className='default-input' type="text" placeholder="Компания: название"/>
                                     </div>
                                     <div>
-                                        <input className='default-input' type="text" placeholder="Компания: название"/>
-                                    </div>
-                                    <div>
-                                        <input className='default-input' type="text" placeholder="Компания: адрес"/>
+                                        <input ref={(ref) => {this.address = ref}} className='default-input' type="text" placeholder="Компания: адрес"/>
                                     </div>
                                     <div className='new-good-buttons'>
-                                        <input className='default-blue-button' type="submit" value="Добавить" />
+                                        <input className='default-blue-button' type="button" onClick={() => this.addTransaction()} value="Добавить" />
                                         <input className='default-white-button' type="reset" onClick={() => this.setState({ addSdelka : false })} value="Отмена" />
                                     </div>
                                 </form>

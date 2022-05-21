@@ -1,104 +1,64 @@
 import React from 'react'
+import { getUser } from '../services/auth'
 
 class AnalyzProdazh extends React.Component {
 
     state = {
-        skladId : 0,
+        sklad : [],
+        fetchedData : [],
+        loading: true,
     }
     
 	render(){
+        var url = `https://crohe.herokuapp.com/api/storage/list`
+		this.state.loading && fetch(url, { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedData: json,
+                loading : false,
+            })
+        })
+
+        var filteredSklady = this.state.fetchedData
+        
+        if(getUser().position == "StorageManager") {
+            filteredSklady = filteredSklady.filter(sklad => sklad.staff.id === getUser().id)
+        }
 		return(
             <div className='analytics-right-content'>
-                { this.state.skladId !== 0 && <div onClick={() => this.setState({ skladId : 0 })} className='dark-bg'></div> }
+                { this.state.sklad.length !== 0 && <div onClick={() => this.setState({ sklad : [] })} className='dark-bg'></div> }
                 <div className='content-title'>
                     СКЛАДЫ
                 </div>
                 <div className='sklad-analytics-container'>
                     <div className='flex-row'>
-                        <div className='col-4 sklad-column'>
+                        {
+                            !this.state.loading && filteredSklady.map(storage => <div key={storage.id} className='col-4 sklad-column'>
                             <div className='card'>
                                 <div className='sklad-title'>
-                                    Склад  №1
+                                    {storage.name}
                                 </div>
                                 <div className='sklad-content'>
                                         <p className='sklad-address'>
-                                        ул. Байзакова 267а
+                                            {storage.address}
                                         </p>
                                         <p className='sklad-info'>
-                                        1500 элемента
+                                            {storage.productList.length} элемента
                                         </p>
-                                        <button onClick={() => this.setState({ skladId : 1 })} className='sklad-show-button'>Показать</button>
+                                        <button onClick={() => this.setState({ sklad : storage })} className='sklad-show-button'>Показать</button>
                                 </div>
                             </div>
-                        </div>
-                        <div className='col-4 sklad-column'>
-                            <div className='card'>
-                                <div className='sklad-title'>
-                                    Склад  №2
-                                </div>
-                                <div className='sklad-content'>
-                                        <p className='sklad-address'>
-                                        ул. Байзакова 267а
-                                        </p>
-                                        <p className='sklad-info'>
-                                        1500 элемента
-                                        </p>
-                                        <button onClick={() => this.setState({ skladId : 2 })} className='sklad-show-button'>Показать</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='col-4 sklad-column'>
-                            <div className='card'>
-                                <div className='sklad-title'>
-                                    Склад  №3
-                                </div>
-                                <div className='sklad-content'>
-                                        <p className='sklad-address'>
-                                        ул. Байзакова 267а
-                                        </p>
-                                        <p className='sklad-info'>
-                                        1500 элемента
-                                        </p>
-                                        <button onClick={() => this.setState({ skladId : 3 })} className='sklad-show-button'>Показать</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='col-4 sklad-column'>
-                            <div className='card'>
-                                <div className='sklad-title'>
-                                    Склад  №4
-                                </div>
-                                <div className='sklad-content'>
-                                        <p className='sklad-address'>
-                                        ул. Байзакова 267а
-                                        </p>
-                                        <p className='sklad-info'>
-                                        1500 элемента
-                                        </p>
-                                        <button onClick={() => this.setState({ skladId : 4 })} className='sklad-show-button'>Показать</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='col-4 sklad-column'>
-                            <div className='card'>
-                                <div className='sklad-title'>
-                                    Склад  №5
-                                </div>
-                                <div className='sklad-content'>
-                                        <p className='sklad-address'>
-                                        ул. Байзакова 267а
-                                        </p>
-                                        <p className='sklad-info'>
-                                        1500 элемента
-                                        </p>
-                                        <button onClick={() => this.setState({ skladId : 5 })} className='sklad-show-button'>Показать</button>
-                                </div>
-                            </div>
-                        </div>
-                        {this.state.skladId !== 0 && <div style={{ top : 50, background : "#E5E5E5", width: 1100}} className='sklad-modal'>
-                            <span onClick={() => {this.setState({ skladId : 0 }); this.setState({ changeSkladmen : false })}} className='close-modal'>×</span>
+                        </div>)
+                        }
+                        {this.state.sklad.length !== 0 && <div style={{ top : 50, background : "#E5E5E5", width: 1100}} className='sklad-modal'>
+                            <span onClick={() => this.setState({ sklad : [] })} className='close-modal'>×</span>
                             <div className='sklad-modal-title'>
-                                Склад  №{this.state.skladId}
+                                {this.state.sklad.name}
                             </div>
                             <div className='sklad-modal-content'>
                                 <div className='flex-row'>

@@ -4,7 +4,25 @@ import { getUser } from "../services/auth";
 
 class Desktop extends React.Component {
 
+    state = {
+        fetchedData : [],
+        loading : true,
+    }
+
 	render(){
+        var url = `https://crohe.herokuapp.com/api/transaction/list`
+		this.state.loading && fetch(url, { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedData: json,
+                loading : false,
+            })
+        })
 		return(
             <div className='layout-div desktop-page body-element'>
                 <div className='desktop-header row'>
@@ -43,7 +61,7 @@ class Desktop extends React.Component {
                                     <div className='card'>
                                         Первичный контакт
                                         <div className='card-content'>
-                                            1
+                                            {this.state.fetchedData.length}
                                             <hr></hr>
                                             <p className='card-bottom-text'>
                                                 за неделю
@@ -55,7 +73,7 @@ class Desktop extends React.Component {
                                     <div className='card'>
                                         Переговоры
                                         <div className='card-content'>
-                                            0
+                                            {this.state.fetchedData.length}
                                             <hr></hr>
                                             <p className='card-bottom-text'>
                                                 за неделю
@@ -67,7 +85,7 @@ class Desktop extends React.Component {
                                     <div className='card'>
                                         Принимают решение
                                         <div className='card-content'>
-                                            3
+                                            {this.state.fetchedData.length}
                                             <hr></hr>
                                             <p className='card-bottom-text'>
                                                 за неделю
@@ -79,7 +97,7 @@ class Desktop extends React.Component {
                                     <div className='card'>
                                         Согласование договора
                                         <div className='card-content'>
-                                            0
+                                            {this.state.fetchedData.length}
                                             <hr></hr>
                                             <p className='card-bottom-text'>
                                                 за неделю
@@ -92,9 +110,9 @@ class Desktop extends React.Component {
                                 <div className='card'>
                                     Первичный контакт
                                     <div className='card-content'>
-                                        2
+                                        {this.state.fetchedData.length}
                                         <div className='card-absolute-text'>
-                                            0
+                                            {this.state.fetchedData.length}
                                             <p className='card-bottom-text'>
                                                 за неделю
                                             </p>
@@ -106,7 +124,7 @@ class Desktop extends React.Component {
                                                     Smith
                                                 </p>
                                                 <p className='desktop-list-item-tasks'>
-                                                    2 задачи
+                                                    {this.state.fetchedData.length} задачи
                                                 </p>
                                                 <hr className='contact-line'></hr>
                                             </div>
@@ -118,7 +136,7 @@ class Desktop extends React.Component {
                                 <div className='card'>
                                     Сделок по менеджерам
                                     <div className='card-content'>
-                                        6
+                                        {this.state.fetchedData.length}
                                         <hr></hr>
                                         <div className='desktop-list'>
                                             <div className='desktop-list-item'>
@@ -126,7 +144,7 @@ class Desktop extends React.Component {
                                                     Smith
                                                 </p>
                                                 <p className='desktop-list-item-tasks'>
-                                                    0 сделок
+                                                    {this.state.fetchedData.length} сделок
                                                 </p>
                                                 <hr className='deal-line'></hr>
                                             </div>
@@ -135,7 +153,7 @@ class Desktop extends React.Component {
                                                     John
                                                 </p>
                                                 <p className='desktop-list-item-tasks'>
-                                                    1 сделок
+                                                    {this.state.fetchedData.length} сделок
                                                 </p>
                                                 <hr className='deal-line'></hr>
                                             </div>
@@ -144,7 +162,7 @@ class Desktop extends React.Component {
                                                     Marat
                                                 </p>
                                                 <p className='desktop-list-item-tasks'>
-                                                    5 сделок
+                                                    {this.state.fetchedData.length} сделок
                                                 </p>
                                                 <hr className='deal-line'></hr>
                                             </div>
@@ -153,7 +171,7 @@ class Desktop extends React.Component {
                                                     Smith
                                                 </p>
                                                 <p className='desktop-list-item-tasks'>
-                                                    0 сделок
+                                                    {this.state.fetchedData.length} сделок
                                                 </p>
                                                 <hr className='deal-line'></hr>
                                             </div>
@@ -162,7 +180,7 @@ class Desktop extends React.Component {
                                                     Smith
                                                 </p>
                                                 <p className='desktop-list-item-tasks'>
-                                                    0 сделок
+                                                    {this.state.fetchedData.length} сделок
                                                 </p>
                                                 <hr className='deal-line'></hr>
                                             </div>
