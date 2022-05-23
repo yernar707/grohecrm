@@ -8,76 +8,17 @@ class Requests extends React.Component {
         selectAll : false,
         checkBoxes : [],
         sendRequest : false,
-        filteredRequests : [],
-        filterStr : ""
+        filterStr : "",
+        fetchedData : [], 
+        loading : true,
+        fetchedStorage: [],
+        storageLoading : true
     }
 
-    requests = [
-        {
-            date : "10.05.2022",
-            id : 1,
-            src : "John Snow",
-            dest : "Rob Stark",
-            status : "processing",
-            sklad : "Склад 1",
-            article : "a020a2020a",
-            quantity : 5,
-        }, 
-        {
-            date : "12.05.2022",
-            id : 2,
-            src : "John Snow",
-            dest : "Rob Stark",
-            status : "accepted",
-            sklad : "Склад 1",
-            article : "b020a2020a",
-            quantity : 12,
-        },
-        {
-            date : "18.05.2022",
-            id : 3,
-            src : "John Snow",
-            dest : "Rob Stark",
-            status : "done",
-            sklad : "Склад 1",
-            article : "с020a2020a",
-            quantity : 8,
-        },
-        {
-            date : "10.05.2022",
-            id : 4,
-            src : "John Snow",
-            dest : "Rob Stark",
-            status : "processing",
-            sklad : "Склад 2",
-            article : "d020a2020a",
-            quantity : 5,
-        },
-        {
-            date : "17.05.2022",
-            id : 5,
-            src : "John Snow",
-            dest : "Rob Stark",
-            status : "processing",
-            sklad : "Склад 2",
-            article : "d020a2020a",
-            quantity : 5,
-        },
-        {
-            date : "15.05.2022",
-            id : 6,
-            src : "John Snow",
-            dest : "Rob Stark",
-            status : "processing",
-            sklad : "Склад 3",
-            article : "e020a2020a",
-            quantity : 5,
-        },
-    ]
 
     componentDidMount() {
-        let temp = new Array(this.requests.length).fill(false)
-        this.setState({ checkBoxes : temp, filteredRequests : this.requests })
+        // let temp = new Array(this.requests.length).fill(false)
+        // this.setState({ checkBoxes : temp, filteredRequests : this.requests })
     }
 
     checkState() {
@@ -108,9 +49,103 @@ class Requests extends React.Component {
         }
     }
 
+    newRequest() {
+        let newDate = new Date()
+        fetch('https://crohe.herokuapp.com/api/request/new/', {
+            method: 'post',
+            headers: {'Content-Type':'application/json'},
+            mode: 'cors',
+            body: JSON.stringify({
+                "articleNumber": this.articleNumber.value,
+                "fromPerson": getUser().firstName + " " + getUser().lastName,
+                "status" : "processing",
+                "quantity" : this.quantity.value,
+                "action" : "Принять",
+                "storage" : this.state.fetchedStorage.find(storage => storage.id.toString() === this.storage.value)
+            })
+        })
+        .then( response =>{
+            if(response.ok){
+                alert("Заявка добавлена")
+                this.setState({
+                    sendRequest : false,
+                    loading : true
+                })
+                return response.json();
+            }
+            alert("Ошибка")
+        })
+    }
+
+    setStatus(id, status) {
+        fetch(`https://crohe.herokuapp.com/api/request/update/${id}/${status}`, {
+            method: 'put',
+            headers: {'Content-Type':'application/json'},
+            mode: 'cors'
+        })
+        .then( response =>{
+            if(response.ok){
+                alert(`Статус заявки№${id} изменен`)
+                this.setState({
+                    loading : true
+                })
+                return response;
+            }
+            alert("Ошибка")
+        })
+    }
+
+    deleteRequest(id) {
+        if(window.confirm('Вы уверены что хотите удалить заявку? После удаления ее невозможно восстановить')){
+            var url = `https://crohe.herokuapp.com/api/request/delete/${id}`
+            fetch(url, { 
+                method: 'delete', 
+            })
+            .then( response =>{
+                if(response.ok){
+                    alert(`Заявка№${id} удалена`)
+                    this.setState({
+                        loading : true
+                    })
+                    return response;
+                }
+                alert("Ошибка")
+            })
+        } 
+    }
+
 	render(){
+        
+        var url = `https://crohe.herokuapp.com/api/request/list`
+		this.state.loading && fetch(url, { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedData : json,
+                loading : false
+            })
+        })
+
+        this.state.storageLoading && fetch(`https://crohe.herokuapp.com/api/storage/list`, {
+            method: 'get'
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedStorage: json,
+                storageLoading : false
+            })
+        })
+
+
         const { filterStr } = this.state
-        const filteredRequests = this.requests
+        const filteredRequests = this.state.fetchedData
             .filter(r => r.id.toString().includes(filterStr.toLowerCase()))
             .map((r, index) => <tr key={r.id}>
                 <td>
@@ -126,30 +161,30 @@ class Requests extends React.Component {
                     {r.id}
                 </td>
                 <td>
-                    {r.src}
+                    {r.fromPerson}
                 </td>
                 <td>
-                    {r.dest}
+                    {r.storage.staff.firstName + " " + r.storage.staff.lastName}
                 </td>
                 <td>
                     {r.status === "processing" && "Обрабатывается"}
                     {r.status === "accepted" && "Принят"}
-                    {r.status === "done" && "Завершен"}
+                    {r.status === "end" && "Завершен"}
                 </td>
                 <td>
-                    {r.sklad}
+                    {r.storage.name + " (id = " + r.storage.id + ")"}
                 </td>
                 <td>
-                    {r.article}
+                    {r.articleNumber}
                 </td>
                 <td>
                     {r.quantity}
                 </td>
                 <td className='flex-row'>
-                    {r.status === "processing" && <button className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Принять</button>}
-                    {r.status === "accepted" && <button className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Завершить</button>}
-                    {r.status === "done" && <button className={`default-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`} disabled>Завершен</button>}
-                    { getUser().position.toLowerCase() === "admin" && <button className='default-white-button'>Удалить</button>}
+                    {r.status === "processing" && <button onClick={() => this.setStatus(r.id, "accepted")} className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Принять</button>}
+                    {r.status === "accepted" && <button onClick={() => this.setStatus(r.id, "end")}  className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Завершить</button>}
+                    {r.status === "end" && <button className={`default-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`} disabled>Завершен</button>}
+                    { getUser().position.toLowerCase() === "admin" && <button className='default-white-button' onClick={() => this.deleteRequest(r.id)}>Удалить</button>}
                 </td>
             </tr>)
 		return(
@@ -173,7 +208,7 @@ class Requests extends React.Component {
                                 </form>
                             </div>
                             <div className='col-5 flex-item flex-item-last'>
-                                <p className='sklady-quantity'>{this.requests.length} заявки</p>
+                                <p className='sklady-quantity'>{this.state.fetchedData.length} заявки</p>
                                 <button className='three-dots'>•••</button>
                                 <button onClick={() => this.setState({  sendRequest : true })} className='new-sklad-button'>+ ОТПРАВИТЬ ЗАЯВКУ</button>
                                 <div className='three-dots-dropdown'>
@@ -240,26 +275,22 @@ class Requests extends React.Component {
                             <div className='new-good-modal-content'>
                                 <form>
                                     <div>
-                                        <select className='default-input'>
-                                            <option value="1">
-                                                Склад 1
-                                            </option>
-                                            <option value="2">
-                                                Склад 2
-                                            </option>
-                                            <option value="3">
-                                                Склад 3
-                                            </option>
+                                        <select ref={(ref) => {this.storage = ref}} className='default-input'>
+                                            {this.state.fetchedStorage.map(storage => 
+                                                <option key={storage.id} value={storage.id}>
+                                                    {storage.name}
+                                                </option>
+                                            )}
                                         </select>
                                     </div>
                                     <div>
-                                        <input className='default-input' type="text" placeholder="Артикуль"/>
+                                        <input ref={(ref) => {this.articleNumber = ref}} className='default-input' type="text" placeholder="Артикуль"/>
                                     </div>
                                     <div>
-                                        <input className='default-input' type="number" min={1} placeholder="Количество"/>
+                                        <input ref={(ref) => {this.quantity = ref}} className='default-input' type="number" min={1} placeholder="Количество"/>
                                     </div>
                                     <div className='new-good-buttons'>
-                                        <input className='default-blue-button' type="submit" value="Добавить" />
+                                        <input className='default-blue-button' type="button" onClick={() => this.newRequest()} value="Добавить" />
                                         <input className='default-white-button' type="reset" onClick={() => this.setState({ sendRequest : false })} value="Отмена" />
                                     </div>
                                 </form>

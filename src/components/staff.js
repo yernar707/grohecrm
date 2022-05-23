@@ -58,6 +58,7 @@ class Staff extends React.Component {
                 alert("Пользователь с таким логином существует")
             }
         })
+        let firstName = this.firstName.value
         valid && fetch('https://crohe.herokuapp.com/api/staff/new/', {
             method: 'post',
             headers: {'Content-Type':'application/json'},
@@ -72,15 +73,17 @@ class Staff extends React.Component {
                 "password" : this.password.value
             })
         })
-        .then(
-            alert(this.firstName.value + " добавлен")
-        )
-        .then(
-            this.setState({
-                addStaff : false
-            }),
-            window.location.reload()
-        )
+        .then( response =>{
+            if(response.ok){
+                alert(firstName + " добавлен")
+                this.setState({
+                    loading :  true,
+                    addStaff : false
+                })
+                return response.json();
+            }
+            alert("Ошибка")
+        })
     }
 
     deleteUser(id) {
@@ -89,9 +92,16 @@ class Staff extends React.Component {
             fetch(url, { 
                 method: 'delete', 
             })
-            .then(
-                alert("Сотрудник удален")
-            )
+            .then( response =>{
+                if(response.ok){
+                    alert("Сотрудник удален")
+                    this.setState({
+                        loading :  true
+                    })
+                    return response;
+                }
+                alert("Ошибка")
+            })
         } 
     }
 
@@ -121,15 +131,18 @@ class Staff extends React.Component {
             mode: 'cors',
             body: JSON.stringify(body)
         })
-        .then(
-            alert(this.firstNameUpdate.value + " изменен")
-        )
-        .then(
-            this.setState({
-                addStaff : false
-            }),
-            window.location.reload()
-        )
+        .then( response =>{
+            if(response.ok){
+                alert(this.firstNameUpdate.value + " изменен")
+                this.setState({
+                    loading :  true,
+                    addStaff : false,
+                    currentUserId : ""
+                })
+                return response.json();
+            }
+            alert("Ошибка")
+        })
     }
 
 	render(){
@@ -193,9 +206,7 @@ class Staff extends React.Component {
                 <td>
                     <div className='flex-row'>
                         <button onClick={() => this.setState( { currentUserId : employee.id })} className='default-blue-button col-4'>Изменить</button>
-                        <form className='col-5'>
-                            <button disabled={employee.position.toLowerCase() === "admin"} onClick={() => this.deleteUser(employee.id)} className='default-white-button'>Удалить</button>
-                        </form>         
+                        <button disabled={employee.position.toLowerCase() === "admin"} onClick={() => this.deleteUser(employee.id)} className='default-white-button'>Удалить</button>       
                     </div>
                      </td>
             </tr>

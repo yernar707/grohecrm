@@ -33,15 +33,17 @@ class Sdelki extends React.Component {
                 "address" : this.addressQuick.value
             })
         })
-        .then(
-            alert(this.nameQuick.value + " добавлен")
-        )
-        .then(
-            this.setState({
-                loading : true,
-                showQuickAdd: false
-            }),
-        )
+        .then( response =>{
+            if(response.ok){
+                alert(this.name.value + " добавлен")
+                this.setState({
+                    loading : true,
+                    showQuickAdd: false
+                })
+                return response.json();
+            }
+            alert("Ошибка")
+        })
     }
 
     addTransaction() {
@@ -65,15 +67,17 @@ class Sdelki extends React.Component {
                 "address" : this.address.value
             })
         })
-        .then(
-            alert(this.name.value + " добавлен")
-        )
-        .then(
-            this.setState({
-                addSdelka : false,
-                loading : true
-            }),
-        )
+        .then( response =>{
+            if(response.ok){
+                    alert(this.name.value + " добавлен")
+                this.setState({
+                    addSdelka : false,
+                    loading : true
+                })
+                return response.json();
+            }
+            alert("Ошибка")
+        })
     }
 
     deleteTransaction(id) {
@@ -82,10 +86,17 @@ class Sdelki extends React.Component {
             fetch(url, { 
                 method: 'delete', 
             })
-            .then(
-                alert("Сделка удалена"),
-                this.setState({ loading : true, currentTransaction: []})
-            )
+            .then( response =>{
+                if(response.ok){
+                    alert("Сделка удалена")
+                    this.setState({
+                        addSdelka : false,
+                        loading : true
+                    })
+                    return response.json();
+                }
+                alert("Ошибка")
+            })
         } 
     }
 
