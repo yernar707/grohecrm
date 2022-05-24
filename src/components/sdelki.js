@@ -6,6 +6,7 @@ class Sdelki extends React.Component {
     state = {
         showQuickAdd : false,
         addSdelka : false,
+        filterStr : "",
         sdelkaId: 0,
         fetchedData : [],
         loading : true,
@@ -218,6 +219,9 @@ class Sdelki extends React.Component {
                 loadingStaff : false,
             })
         })
+
+        const filteredTransactions = this.state.fetchedData
+            .filter(e => e.name.toLowerCase().includes(this.state.filterStr.toLowerCase()))
         
 		return(
             <div className='sdelki-page'>
@@ -236,12 +240,12 @@ class Sdelki extends React.Component {
                                             <path fillRule="evenodd" clipRule="evenodd" d="M7.19231 1.96154C4.30343 1.96154 1.96154 4.30343 1.96154 7.19231C1.96154 10.0812 4.30343 12.4231 7.19231 12.4231C10.0812 12.4231 12.4231 10.0812 12.4231 7.19231C12.4231 4.30343 10.0812 1.96154 7.19231 1.96154ZM0 7.19231C0 3.22011 3.22011 0 7.19231 0C11.1645 0 14.3846 3.22011 14.3846 7.19231C14.3846 11.1645 11.1645 14.3846 7.19231 14.3846C3.22011 14.3846 0 11.1645 0 7.19231Z" fill="white"/>
                                         </svg>
                                     </i>
-                                    <input type={'text'} name="search" id='search' placeholder='Поиск'></input>
+                                    <input type={'text'} onChange={e => this.setState({ filterStr: e.target.value }) } name="search" id='search' placeholder='Поиск'></input>
                                 </form>
                             </div>
                             <div className='col-5 flex-item flex-item-last'>
-                                <p className='sdelki-quantity'>{this.state.fetchedData.length} сделок: </p>
-                                <p className='sdelki-money'>{this.state.fetchedData.reduce((partialSum, a) => partialSum + a.price, 0)} тенге</p>
+                                <p className='sdelki-quantity'>{filteredTransactions.length} сделок: </p>
+                                <p className='sdelki-money'>{filteredTransactions.reduce((partialSum, a) => partialSum + a.price, 0)} тенге</p>
                                 <button className='three-dots'>•••</button>
                                 <button className='settings-button'>НАСТРОЙКА</button>
                                 <button onClick={() => this.setState({ addSdelka : true })} className='new-sdelka-button'>+ НОВАЯ СДЕЛКА</button>
@@ -258,17 +262,17 @@ class Sdelki extends React.Component {
                                 </div>
                                 <div className='column-subtitle'>
                                     {
-                                        this.state.fetchedData
+                                        filteredTransactions
                                             .filter(transaction => transaction.stage === 1)
                                             .length
                                     } сделок: {
-                                        this.state.fetchedData
+                                        filteredTransactions
                                             .filter(transaction => transaction.stage === 1)
                                             .reduce((partialSum, a) => partialSum + a.price, 0)} тенге
                                 </div>
                                 <hr></hr>
                                 {
-                                    !this.state.loading && this.state.fetchedData
+                                    !this.state.loading && filteredTransactions
                                     .sort((a,b) => a.id > b.id ? 1 : -1)
                                     .filter(transaction => transaction.stage === 1)
                                     .map(transaction => 
@@ -349,17 +353,17 @@ class Sdelki extends React.Component {
                                 </div>
                                 <div className='column-subtitle'>
                                     {
-                                        this.state.fetchedData
+                                        filteredTransactions
                                             .filter(transaction => transaction.stage === 2)
                                             .length
                                     } сделок: {
-                                        this.state.fetchedData
+                                        filteredTransactions
                                             .filter(transaction => transaction.stage === 2)
                                             .reduce((partialSum, a) => partialSum + a.price, 0)} тенге
                                 </div>
                                 <hr></hr>
                                 {
-                                    !this.state.loading && this.state.fetchedData
+                                    !this.state.loading &&  filteredTransactions
                                     .sort((a,b) => a.id > b.id ? 1 : -1)
                                     .filter(transaction => transaction.stage === 2)
                                     .map(transaction => 
@@ -388,17 +392,17 @@ class Sdelki extends React.Component {
                                 </div>
                                 <div className='column-subtitle'>
                                     {
-                                        this.state.fetchedData
+                                        filteredTransactions
                                             .filter(transaction => transaction.stage === 3)
                                             .length
                                     } сделок: {
-                                        this.state.fetchedData
+                                        filteredTransactions
                                             .filter(transaction => transaction.stage === 3)
                                             .reduce((partialSum, a) => partialSum + a.price, 0)} тенге
                                 </div>
                                 <hr></hr>
                                 {
-                                    !this.state.loading && this.state.fetchedData
+                                    !this.state.loading &&  filteredTransactions
                                     .sort((a,b) => a.id > b.id ? 1 : -1)
                                     .filter(transaction => transaction.stage === 3)
                                     .map(transaction => 
@@ -427,17 +431,17 @@ class Sdelki extends React.Component {
                                 </div>
                                 <div className='column-subtitle'>
                                     {
-                                        this.state.fetchedData
+                                        filteredTransactions
                                             .filter(transaction => transaction.stage === 4)
                                             .length
                                     } сделок: {
-                                        this.state.fetchedData
+                                        filteredTransactions
                                             .filter(transaction => transaction.stage === 4)
                                             .reduce((partialSum, a) => partialSum + a.price, 0)} тенге
                                 </div>
                                 <hr></hr>
                                 {
-                                    !this.state.loading && this.state.fetchedData
+                                    !this.state.loading && filteredTransactions
                                     .sort((a,b) => a.id > b.id ? 1 : -1)
                                     .filter(transaction => transaction.stage === 4)
                                     .map(transaction => 
