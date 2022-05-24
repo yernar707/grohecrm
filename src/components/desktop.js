@@ -7,6 +7,24 @@ class Desktop extends React.Component {
     state = {
         fetchedData : [],
         loading : true,
+        grouped : false,
+        groubedByTeam : [],
+        fetchedStaff: [],
+        loadingStaff : false,
+    }
+
+
+    groupBy = function(xs, key) {
+        var temp = xs.reduce(function(rv, x) {
+            (rv[x[key]] = rv[x[key]] || []).push(x);
+            return rv;
+        }, {});
+        
+        return Promise.resolve(temp)
+    };
+    
+    groubedByTeam(){
+        this.groupBy(this.state.fetchedData, 'fromPerson').then(temp => this.setState({ grouped : true, groubedByTeam : Object.values(temp)}))
     }
 
 	render(){
@@ -23,6 +41,23 @@ class Desktop extends React.Component {
                 loading : false,
             })
         })
+
+        var staffUrl = `https://crohe.herokuapp.com/api/staff/list`
+		this.state.loading && fetch(staffUrl, { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedStaff: json,
+                loadingStaff : false,
+            })
+        })
+
+        !this.state.grouped && !this.state.loading && this.groubedByTeam()
+        
 		return(
             <div className='layout-div desktop-page body-element'>
                 <div className='desktop-header row'>
@@ -61,10 +96,14 @@ class Desktop extends React.Component {
                                     <div className='card'>
                                         Первичный контакт
                                         <div className='card-content'>
-                                            {this.state.fetchedData.length}
+                                            {
+                                                this.state.fetchedData
+                                                    .filter(transaction => transaction.stage === 1)
+                                                    .length
+                                            }
                                             <hr></hr>
                                             <p className='card-bottom-text'>
-                                                за неделю
+                                                {/* за неделю */}
                                             </p>
                                         </div>
                                     </div>
@@ -73,10 +112,14 @@ class Desktop extends React.Component {
                                     <div className='card'>
                                         Переговоры
                                         <div className='card-content'>
-                                            {this.state.fetchedData.length}
+                                            {
+                                                this.state.fetchedData
+                                                    .filter(transaction => transaction.stage === 2)
+                                                    .length
+                                            }
                                             <hr></hr>
                                             <p className='card-bottom-text'>
-                                                за неделю
+                                                {/* за неделю */}
                                             </p>
                                         </div>
                                     </div>
@@ -85,10 +128,14 @@ class Desktop extends React.Component {
                                     <div className='card'>
                                         Принимают решение
                                         <div className='card-content'>
-                                            {this.state.fetchedData.length}
+                                            {
+                                                this.state.fetchedData
+                                                    .filter(transaction => transaction.stage === 3)
+                                                    .length
+                                            }
                                             <hr></hr>
                                             <p className='card-bottom-text'>
-                                                за неделю
+                                                {/* за неделю */}
                                             </p>
                                         </div>
                                     </div>
@@ -97,10 +144,14 @@ class Desktop extends React.Component {
                                     <div className='card'>
                                         Согласование договора
                                         <div className='card-content'>
-                                            {this.state.fetchedData.length}
+                                            {
+                                                this.state.fetchedData
+                                                    .filter(transaction => transaction.stage === 4)
+                                                    .length
+                                            }
                                             <hr></hr>
                                             <p className='card-bottom-text'>
-                                                за неделю
+                                                {/* за неделю */}
                                             </p>
                                         </div>
                                     </div>
@@ -110,24 +161,43 @@ class Desktop extends React.Component {
                                 <div className='card'>
                                     Первичный контакт
                                     <div className='card-content'>
-                                        {this.state.fetchedData.length}
+                                            {
+                                                this.state.fetchedData
+                                                    .filter(transaction => transaction.stage === 1)
+                                                    .length
+                                            }
                                         <div className='card-absolute-text'>
-                                            {this.state.fetchedData.length}
+                                            {/* {
+                                                this.state.fetchedData
+                                                    .filter(transaction => transaction.stage === 1)
+                                                    .length
+                                            } */}
                                             <p className='card-bottom-text'>
-                                                за неделю
+                                                {/* за неделю */}
                                             </p>
                                         </div>
                                         <hr></hr>
                                         <div className='desktop-list'>
-                                            <div className='desktop-list-item'>
-                                                <p className='desktop-list-item-name'>
-                                                    Smith
-                                                </p>
-                                                <p className='desktop-list-item-tasks'>
-                                                    {this.state.fetchedData.length} задачи
-                                                </p>
-                                                <hr className='contact-line'></hr>
-                                            </div>
+                                            {
+                                                this.state.grouped && !this.state.loading && this.state.groubedByTeam
+                                                    .map(arr => arr.filter(tr => tr.stage === 1))
+                                                    .map((arr, index) => arr.length > 0 && <div key={index} className='desktop-list-item'>
+                                                        <p className='desktop-list-item-name'>
+                                                             {
+                                                                !this.state.loadingStaff && this.state.fetchedStaff
+                                                                    .filter(st => st.id === parseInt(arr[0].fromPerson))
+                                                                    .map(st => st.firstName + " " + st.lastName)
+                                                            }
+                                                        </p>
+                                                        <p className='desktop-list-item-tasks'>
+                                                            {
+                                                                arr.length
+                                                            } сделок
+                                                        </p>
+                                                        <hr className='contact-line'></hr>
+                                                    </div>
+                                                    )
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -139,51 +209,24 @@ class Desktop extends React.Component {
                                         {this.state.fetchedData.length}
                                         <hr></hr>
                                         <div className='desktop-list'>
-                                            <div className='desktop-list-item'>
-                                                <p className='desktop-list-item-name'>
-                                                    Smith
-                                                </p>
-                                                <p className='desktop-list-item-tasks'>
-                                                    {this.state.fetchedData.length} сделок
-                                                </p>
-                                                <hr className='deal-line'></hr>
-                                            </div>
-                                            <div className='desktop-list-item'>
-                                                <p className='desktop-list-item-name'>
-                                                    John
-                                                </p>
-                                                <p className='desktop-list-item-tasks'>
-                                                    {this.state.fetchedData.length} сделок
-                                                </p>
-                                                <hr className='deal-line'></hr>
-                                            </div>
-                                            <div className='desktop-list-item'>
-                                                <p className='desktop-list-item-name'>
-                                                    Marat
-                                                </p>
-                                                <p className='desktop-list-item-tasks'>
-                                                    {this.state.fetchedData.length} сделок
-                                                </p>
-                                                <hr className='deal-line'></hr>
-                                            </div>
-                                            <div className='desktop-list-item'>
-                                                <p className='desktop-list-item-name'>
-                                                    Smith
-                                                </p>
-                                                <p className='desktop-list-item-tasks'>
-                                                    {this.state.fetchedData.length} сделок
-                                                </p>
-                                                <hr className='deal-line'></hr>
-                                            </div>
-                                            <div className='desktop-list-item'>
-                                                <p className='desktop-list-item-name'>
-                                                    Smith
-                                                </p>
-                                                <p className='desktop-list-item-tasks'>
-                                                    {this.state.fetchedData.length} сделок
-                                                </p>
-                                                <hr className='deal-line'></hr>
-                                            </div>
+                                        {
+                                                this.state.grouped && !this.state.loading && this.state.groubedByTeam
+                                                    .map((arr, index) => arr.length > 0 && <div key={index} className='desktop-list-item'>
+                                                        <p className='desktop-list-item-name'>
+                                                             {
+                                                                !this.state.loadingStaff && this.state.fetchedStaff
+                                                                    .filter(st => st.id === parseInt(arr[0].fromPerson))
+                                                                    .map(st => st.firstName + " " + st.lastName)
+                                                            }
+                                                        </p>
+                                                        <p className='desktop-list-item-tasks'>
+                                                            {
+                                                                arr.length
+                                                            } задачи
+                                                        </p>
+                                                    </div>
+                                                    )
+                                            }
                                         </div>
                                     </div>
                                 </div>
