@@ -150,6 +150,8 @@ class Sklady extends React.Component {
                 "articleNumber": this.productArticle.value,
                 "name": this.productName.value,
                 "parameter1": this.productQuantity.value,
+                "priceBought": parseInt(this.priceBought.value),
+                "priceSale": parseInt(this.priceSale.value),
                 "parameter2": this.productParameter.value,
                 "storage": this.state.fetchedData.find(storage => storage.id.toString() === this.productStorage.value)
             })
@@ -283,6 +285,12 @@ class Sklady extends React.Component {
                             </form>} */}
                         </td>
                         <td>
+                            {g.priceBought}
+                        </td>
+                        <td>
+                            {g.priceSale}
+                        </td>
+                        <td>
                             {g.parameter2}
                         </td>
                         <td>
@@ -385,6 +393,12 @@ class Sklady extends React.Component {
                                         <input ref={(ref) => {this.productQuantity = ref}} required className='default-input' type="text" placeholder="Количество"/>
                                     </div>
                                     <div>
+                                        <input ref={(ref) => {this.priceBought = ref}} required className='default-input' min={0} type="number" placeholder="Цена при покупке"/>
+                                    </div>
+                                    <div>
+                                        <input ref={(ref) => {this.priceSale = ref}} required className='default-input' min={0} type="number" placeholder="Цена при продаже"/>
+                                    </div>
+                                    <div>
                                         <input ref={(ref) => {this.productParameter = ref}} required className='default-input' type="text" placeholder="Параметры"/>
                                     </div>
                                     <div className='new-good-buttons'>
@@ -446,8 +460,10 @@ class Sklady extends React.Component {
                                         <th>Артикул</th>
                                         <th>название</th>
                                         <th>Количество</th>
+                                        <th>Цена при покупке</th>
+                                        <th>Цена при продаже</th>
                                         <th>параметры</th>
-                                        <th>Действие</th>
+                                        { getUser().position !== "SaleManager" && <th>Действие</th>}
                                     </tr>
                                     { filteredGoods }
                                 </tbody>

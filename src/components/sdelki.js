@@ -59,6 +59,11 @@ class Sdelki extends React.Component {
                 alert("Сделка с таким названием существует")
             }
         })
+        if(this.name.value.length === 0 || this.price.value.length === 0 || this.phoneNumber.value.length === 0 ||
+            this.email.value.length === 0 || this.companyName.value.length === 0 || this.address.value.length === 0) {
+                valid = false
+                alert("Заполните все поля")
+        }
         valid && fetch('https://crohe.herokuapp.com/api/transaction/new/', {
             method: 'post',
             headers: {'Content-Type':'application/json'},
@@ -247,8 +252,8 @@ class Sdelki extends React.Component {
                                 <p className='sdelki-quantity'>{filteredTransactions.length} сделок: </p>
                                 <p className='sdelki-money'>{filteredTransactions.reduce((partialSum, a) => partialSum + a.price, 0)} тенге</p>
                                 <button className='three-dots'>•••</button>
-                                <button className='settings-button'>НАСТРОЙКА</button>
-                                <button onClick={() => this.setState({ addSdelka : true })} className='new-sdelka-button'>+ НОВАЯ СДЕЛКА</button>
+                                {/* <button className='settings-button'>НАСТРОЙКА</button> */}
+                                <button onClick={() => this.setState({ addSdelka : true })} style={{marginLeft: 25}} className='new-sdelka-button'>+ НОВАЯ СДЕЛКА</button>
                             </div>
                         </div>
                     </div>

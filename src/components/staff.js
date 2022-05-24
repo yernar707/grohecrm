@@ -113,9 +113,20 @@ class Staff extends React.Component {
                 alert("Пользователь с таким логином существует")
             }
         })
+        if(this.firstNameUpdate.value.length === 0 || this.lastNameUpdate.value.length === 0 || this.emailUpdate.value.length === 0 ||
+            this.phoneNumberUpdate.value.length === 0 || this.loginUpdate.value.length === 0) {
+                valid = false
+                alert("Заполните все поля")
+        }
         let password = this.state.currentUser.password
-        if(this.newPasswordCheck.checked)
-            password = this.passwordUpdate.value
+        if(this.newPasswordCheck.checked){
+            if(this.passwordUpdate.value.length === 0) {
+                valid = false
+                alert("Заполните все поля")
+            } else {
+                password = this.passwordUpdate.value
+            }
+        }
         let body = {
             "firstName": this.firstNameUpdate.value,
             "lastName": this.lastNameUpdate.value,

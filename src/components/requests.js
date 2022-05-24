@@ -15,7 +15,10 @@ class Requests extends React.Component {
         storageLoading : true,
         fetchedStaff : [],
         loadingStaff : true,
-        selectedStorage : "none"
+        selectedStorage : "none",
+        selectedProduct : "none",
+        fetchedProduct : [],
+        loadingProduct : true
     }
 
 
@@ -53,51 +56,129 @@ class Requests extends React.Component {
     }
 
     newRequest() {
-        if(this.articleNumber === undefined || this.state.selectedStorage === "none" || this.quantity.value.length === 0 || this.storage === undefined)
+        let valid = true
+        if(this.articleNumber === undefined || this.state.selectedStorage === "none" || this.state.selectedProduct === "none" || this.quantity.value.length === 0 || this.storage === undefined){
             alert("Заполните все поля")
-        else
-            fetch('https://crohe.herokuapp.com/api/request/new/', {
-                method: 'post',
-                headers: {'Content-Type':'application/json'},
-                mode: 'cors',
-                body: JSON.stringify({
-                    "articleNumber": this.articleNumber.value,
-                    "fromPerson": getUser().id,
-                    "status" : "processing",
-                    "quantity" : this.quantity.value,
-                    "action" : "Принять",
-                    "storage" : this.state.fetchedStorage.find(storage => storage.id.toString() === this.storage.value)
-                })
-            })
-            .then( response =>{
-                if(response.ok){
-                    alert("Заявка добавлена")
-                    this.setState({
-                        sendRequest : false,
-                        loading : true
-                    })
-                    return response.json();
-                }
-                alert("Ошибка")
-            })
-    }
-
-    setStatus(id, status) {
-        fetch(`https://crohe.herokuapp.com/api/request/update/${id}/${status}`, {
-            method: 'put',
+            valid = false
+        }
+        this.state.fetchedStorage
+            .filter(storage => storage.id === parseInt(this.state.selectedStorage))
+            .map(
+                storage => storage.productList
+                    .filter(product => product.articleNumber === this.state.selectedProduct)
+                    .map(product => parseInt(product.parameter1) < parseInt(this.quantity.value) ? (alert(`Максимальное количество: ${product.parameter1}`), valid = false) : valid = valid)
+            )
+        valid && fetch('https://crohe.herokuapp.com/api/request/new/', {
+            method: 'post',
             headers: {'Content-Type':'application/json'},
-            mode: 'cors'
+            mode: 'cors',
+            body: JSON.stringify({
+                "articleNumber": this.articleNumber.value,
+                "fromPerson": getUser().id,
+                "status" : "processing",
+                "quantity" : this.quantity.value,
+                "action" : "Принять",
+                "storage" : this.state.fetchedStorage.find(storage => storage.id.toString() === this.storage.value)
+            })
         })
         .then( response =>{
             if(response.ok){
-                alert(`Статус заявки№${id} изменен`)
+                alert("Заявка добавлена")
                 this.setState({
-                    loading : true
+                    sendRequest : false,
+                    loading : true,
+                    selectedProduct : "none",
+                    selectedStorage : "none"
                 })
-                return response;
+                return response.json();
             }
             alert("Ошибка")
         })
+    }
+
+    setStatus(id, status, storageId, articleNumber, quantity) {
+        var valid = true
+        if(status === "end" ) {
+            this.state.loadingProduct && fetch(`https://crohe.herokuapp.com/api/product/list`, {
+                method: 'get', 
+            })
+            .then(response => {
+                return response.json();
+            })
+            .then(json => {
+                this.setState({
+                    fetchedProduct : json.filter(product => product.storage.id === storageId).find(product => product.articleNumber === articleNumber),
+                    loadingProduct : false
+                }, () => {
+                    if(parseInt(this.state.fetchedProduct.parameter1) < quantity) {
+                        valid = false
+                        alert("Товара недостаточно")
+                        this.setState({
+                            loading : true,
+                            loadingProduct : true,
+                            fetchedProduct : []
+                        })
+                    }
+                    let newQuantity = parseInt(this.state.fetchedProduct.parameter1) - quantity
+                    let body =
+                        {
+                            "id": this.state.fetchedProduct.id,
+                            "articleNumber": this.state.fetchedProduct.articleNumber,
+                            "name": this.state.fetchedProduct.name,
+                            "parameter1":  newQuantity,
+                            "priceBought": this.state.fetchedProduct.priceBought,
+                            "priceSale": this.state.fetchedProduct.priceSale,
+                            "parameter2": this.state.fetchedProduct.parameter2,
+                            "storage": this.state.fetchedProduct.storage
+                        }
+                    valid && fetch(`https://crohe.herokuapp.com/api/product/update/${this.state.fetchedProduct.id}`, {
+                        method: 'put',
+                        headers: {'Content-Type':'application/json'},
+                        mode: 'cors',
+                        body : JSON.stringify(body)
+                    })
+                    .then( response =>{
+                        if(response.ok){
+                            fetch(`https://crohe.herokuapp.com/api/request/update/${id}/${status}`, {
+                                method: 'put',
+                                headers: {'Content-Type':'application/json'},
+                                mode: 'cors'
+                            })
+                            .then( response =>{
+                                if(response.ok){
+                                    alert(`Статус заявки№${id} изменен`)
+                                    this.setState({
+                                        loading : true,
+                                        loadingProduct : true,
+                                        fetchedProduct : []
+                                    })
+                                    return response;
+                                }
+                                alert("Ошибка")
+                            })
+                            return response;
+                        }
+                        alert("Ошибка")
+                    })
+                })
+            })
+        } else {
+            valid && fetch(`https://crohe.herokuapp.com/api/request/update/${id}/${status}`, {
+                method: 'put',
+                headers: {'Content-Type':'application/json'},
+                mode: 'cors'
+            })
+            .then( response =>{
+                if(response.ok){
+                    alert(`Статус заявки№${id} изменен`)
+                    this.setState({
+                        loading : true
+                    })
+                    return response;
+                }
+                alert("Ошибка")
+            })
+        }
     }
 
     deleteRequest(id) {
@@ -215,8 +296,8 @@ class Requests extends React.Component {
                         {r.quantity}
                     </td>
                     {getUser().position.toLowerCase() !== "salemanager" && <td className='flex-row'>
-                            {r.status === "processing" && <button onClick={() => this.setStatus(r.id, "accepted")} className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Принять</button>}
-                            {r.status === "accepted" && <button onClick={() => this.setStatus(r.id, "end")}  className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Завершить</button>}
+                            {r.status === "processing" && <button onClick={() => this.setStatus(r.id, "accepted", r.storage.id, r.articleNumber, r.quantity)} className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Принять</button>}
+                            {r.status === "accepted" && <button onClick={() => this.setStatus(r.id, "end", r.storage.id, r.articleNumber, r.quantity)}  className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Завершить</button>}
                             {r.status === "end" && <button className={`default-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`} disabled>Завершен</button>}
                             { getUser().position.toLowerCase() === "admin" && <button className='default-white-button' onClick={() => this.deleteRequest(r.id)}>Удалить</button>}
                         </td>
@@ -225,7 +306,7 @@ class Requests extends React.Component {
         }
 		return(
             <div className='sklad-page'>
-                {this.state.sendRequest && <div onClick={() => this.setState({ sendRequest : false, selectedStorage : "none"  })} className='dark-bg'></div>}
+                {this.state.sendRequest && <div onClick={() => this.setState({ sendRequest : false, selectedStorage : "none", selectedProduct : "none"  })} className='dark-bg'></div>}
                 <div className='default-header'>
                     <div className='default-container' style={{height: `100%`}}>
                         <div className='flex-row'>
@@ -306,7 +387,7 @@ class Requests extends React.Component {
 
                     {
                         this.state.sendRequest && <div className='new-good-modal'>
-                            <span onClick={() => this.setState({ sendRequest : false, selectedStorage : "none" })} className='close-modal'>×</span>
+                            <span onClick={() => this.setState({ sendRequest : false, selectedStorage : "none", selectedProduct : "none" })} className='close-modal'>×</span>
                             <div className='new-good-modal-title'>
                                 <p>Новая заявка</p>
                             </div>
@@ -325,8 +406,9 @@ class Requests extends React.Component {
                                     <div>
                                         {this.state.selectedStorage !== "none" && this.state.fetchedStorage
                                             .filter(storage => storage.id === parseInt(this.state.selectedStorage))
-                                            .map(storage => 
-                                                <select required ref={(ref) => {this.articleNumber = ref}} className='default-input'>
+                                            .map((storage, index) => 
+                                                <select key={index} required ref={(ref) => {this.articleNumber = ref}} value={this.state.selectedProduct} onChange={(e) => this.setState({ selectedProduct : e.currentTarget.value })}  className='default-input'>
+                                                    <option value="none">Выберите продукт</option>
                                                     {storage.productList
                                                         .map(product => 
                                                             <option key={product.id} value={product.articleNumber}>
@@ -337,11 +419,20 @@ class Requests extends React.Component {
                                         )}
                                     </div>
                                     <div>
-                                        <input required ref={(ref) => {this.quantity = ref}} className='default-input' type="number" min={1} placeholder="Количество"/>
+                                        {
+                                            this.state.selectedProduct !== "none" && this.state.fetchedStorage
+                                                .filter(storage => storage.id === parseInt(this.state.selectedStorage))
+                                                .map(
+                                                    storage => storage.productList
+                                                        .filter(product => product.articleNumber === this.state.selectedProduct)
+                                                        .map(product => <input key={product.articleNumber} required ref={(ref) => {this.quantity = ref}} max={product.parameter1} className='default-input' type="number" min={1} placeholder={`Количество (максимум: ${product.parameter1})`}/>)
+                                                )
+                                        }
+                                        {/* <input required ref={(ref) => {this.quantity = ref}} max={parseInt(this.state.selectedProduct)} className='default-input' type="number" min={1} placeholder="Количество"/> */}
                                     </div>
                                     <div className='new-good-buttons'>
                                         <input className='default-blue-button' type="button" onClick={() => this.newRequest()} value="Добавить" />
-                                        <input className='default-white-button' type="reset" onClick={() => this.setState({ sendRequest : false, selectedStorage : "none" })} value="Отмена" />
+                                        <input className='default-white-button' type="reset" onClick={() => this.setState({ sendRequest : false, selectedStorage : "none", selectedProduct : "none" })} value="Отмена" />
                                     </div>
                                 </form>
                             </div>
