@@ -950,8 +950,8 @@ table th:last-child::after, table th:first-child::after {
 }
 
 .sdelka-modal {
-  position: absolute;
-  top: 0;
+  position: fixed;
+  top: 150px;
   left: 50%;
   transform: translateX(-50%);
   width: 700px;

@@ -22,23 +22,26 @@ fetch(url, {
 })
 
 export const handleLogin = ({ username, password, data }) => {
-  while(fetchedData.length === 0){}
-  fetchedData.forEach(user => {
-    if(user.login === username && user.password === password) {
-      enter = true
-      return setUser({
-        id: user.id,
-        position: user.position,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        login: user.login,
-        password: user.password
-      })
-    }
-  });
+  if(fetchedData.length === 0){
+    alert("Ошибка сервера, обновите страницу или перезайдите через некоторое время")
+  } else {
+    fetchedData.forEach(user => {
+      if(user.login === username && user.password === password) {
+        enter = true
+        return setUser({
+          id: user.id,
+          position: user.position,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          login: user.login,
+          password: user.password
+        })
+      }
+  })}
   if(!enter){
+    alert("Неправильный логин и/или пароль")
     setUser({});
     return false
   }

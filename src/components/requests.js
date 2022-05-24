@@ -145,48 +145,50 @@ class Requests extends React.Component {
 
 
         const { filterStr } = this.state
-        const filteredRequests = this.state.fetchedData
-            .filter(r => r.id.toString().includes(filterStr.toLowerCase()))
-            .map((r, index) => <tr key={r.id}>
-                <td>
-                    <label className="container-check">
-                        <input id={index} onChange={(e) => this.getStatus(e)} checked={this.state.checkBoxes[index] || false} type="checkbox"></input>
-                        <span className="checkmark"></span>
-                    </label>
-                </td>
-                <td>
-                    {r.date}
-                </td>
-                <td>
-                    {r.id}
-                </td>
-                <td>
-                    {r.fromPerson}
-                </td>
-                <td>
-                    {r.storage.staff.firstName + " " + r.storage.staff.lastName}
-                </td>
-                <td>
-                    {r.status === "processing" && "Обрабатывается"}
-                    {r.status === "accepted" && "Принят"}
-                    {r.status === "end" && "Завершен"}
-                </td>
-                <td>
-                    {r.storage.name + " (id = " + r.storage.id + ")"}
-                </td>
-                <td>
-                    {r.articleNumber}
-                </td>
-                <td>
-                    {r.quantity}
-                </td>
-                <td className='flex-row'>
-                    {r.status === "processing" && <button onClick={() => this.setStatus(r.id, "accepted")} className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Принять</button>}
-                    {r.status === "accepted" && <button onClick={() => this.setStatus(r.id, "end")}  className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Завершить</button>}
-                    {r.status === "end" && <button className={`default-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`} disabled>Завершен</button>}
-                    { getUser().position.toLowerCase() === "admin" && <button className='default-white-button' onClick={() => this.deleteRequest(r.id)}>Удалить</button>}
-                </td>
-            </tr>)
+        var filteredRequests = []
+        if(this.state.fetchedData.length > 0)
+            filteredRequests = this.state.fetchedData
+                .filter(r => r.id.toString().includes(filterStr.toLowerCase()))
+                .map((r, index) => <tr key={r.id}>
+                    <td>
+                        <label className="container-check">
+                            <input id={index} onChange={(e) => this.getStatus(e)} checked={this.state.checkBoxes[index] || false} type="checkbox"></input>
+                            <span className="checkmark"></span>
+                        </label>
+                    </td>
+                    <td>
+                        {r.date}
+                    </td>
+                    <td>
+                        {r.id}
+                    </td>
+                    <td>
+                        {r.fromPerson}
+                    </td>
+                    <td>
+                        {r.storage.staff.firstName + " " + r.storage.staff.lastName}
+                    </td>
+                    <td>
+                        {r.status === "processing" && "Обрабатывается"}
+                        {r.status === "accepted" && "Принят"}
+                        {r.status === "end" && "Завершен"}
+                    </td>
+                    <td>
+                        {r.storage.name + " (id = " + r.storage.id + ")"}
+                    </td>
+                    <td>
+                        {r.articleNumber}
+                    </td>
+                    <td>
+                        {r.quantity}
+                    </td>
+                    <td className='flex-row'>
+                        {r.status === "processing" && <button onClick={() => this.setStatus(r.id, "accepted")} className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Принять</button>}
+                        {r.status === "accepted" && <button onClick={() => this.setStatus(r.id, "end")}  className={`default-blue-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`}>Завершить</button>}
+                        {r.status === "end" && <button className={`default-button ${ getUser().position.toLowerCase() === "admin" && "col-6"}`} disabled>Завершен</button>}
+                        { getUser().position.toLowerCase() === "admin" && <button className='default-white-button' onClick={() => this.deleteRequest(r.id)}>Удалить</button>}
+                    </td>
+                </tr>)
 		return(
             <div className='sklad-page'>
                 {this.state.sendRequest && <div onClick={() => this.setState({ sendRequest : false })} className='dark-bg'></div>}

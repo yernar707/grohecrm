@@ -29,7 +29,7 @@ class Analytics extends React.Component {
                             <div className='sidebar-item'>
                                 <Link to='' onClick={() => this.setState({ currentContent : 7 })} className={`clickable ` + (this.state.currentContent === 7 && "active-clickable")}> Склады </Link>
                             </div>
-                            <div className='sidebar-item'>
+                            {/* <div className='sidebar-item'>
                                 <Link to='' onClick={() => this.setState({ currentContent : 2 })} className={`clickable ` + (this.state.currentContent === 2 && "active-clickable")}>Сводный отчет</Link>
                             </div>
                             <div className='sidebar-item'>
@@ -42,8 +42,8 @@ class Analytics extends React.Component {
                                 <Link to='' onClick={() => this.setState({ currentContent : 5 })} className={`clickable ` + (this.state.currentContent === 5 && "active-clickable")}> Звонки  </Link>
                             </div>
                             <div className='sidebar-item'>
-                                <Link to='' onClick={() => this.setState({ currentContent : 6 })} className={`clickable ` + (this.state.currentContent === 6 && "active-clickable")}> Цели </Link>
-                            </div>
+                                <Link to='' onClick={() => this.setState({ currentContent : 6 })} className={`clickable ` + (this.state.currentContent === 6 && "active-clickable")}> Цели </Link> */}
+                            {/* </div> */}
                         </div>
                         <div className='col-9 analytics-content'>
                             { this.state.currentContent === 1 && <AnalyzProdazh></AnalyzProdazh>}

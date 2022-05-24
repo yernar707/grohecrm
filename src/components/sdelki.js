@@ -10,6 +10,8 @@ class Sdelki extends React.Component {
         fetchedData : [],
         loading : true,
         currentTransaction : [],
+        fetchedStaff : [],
+        loadingStaff : true,
     }
 
     addTransactionQuick() {
@@ -25,17 +27,19 @@ class Sdelki extends React.Component {
             headers: {'Content-Type':'application/json'},
             mode: 'cors',
             body: JSON.stringify({
+                "fromPerson" : getUser().firstName + " " + getUser().lastName,
                 "name": this.nameQuick.value,
                 "price": this.priceQuick.value,
                 "phoneNumber": this.phoneNumberQuick.value,
                 "email" : this.emailQuick.value,
                 "companyName" : this.companyNameQuick.value,
-                "address" : this.addressQuick.value
+                "address" : this.addressQuick.value,
+                "stage" : 1
             })
         })
         .then( response =>{
             if(response.ok){
-                alert(this.name.value + " добавлен")
+                alert(this.nameQuick.value + " добавлен")
                 this.setState({
                     loading : true,
                     showQuickAdd: false
@@ -59,12 +63,14 @@ class Sdelki extends React.Component {
             headers: {'Content-Type':'application/json'},
             mode: 'cors',
             body: JSON.stringify({
-                "name": this.name.value,
-                "price": this.price.value,
+                "fromPerson" : getUser().firstName + " " + getUser().lastName,
+                "name" : this.name.value,
+                "price" : this.price.value,
                 "phoneNumber": this.phoneNumber.value,
                 "email" : this.email.value,
                 "companyName" : this.companyName.value,
-                "address" : this.address.value
+                "address" : this.address.value,
+                "stage" : 1
             })
         })
         .then( response =>{
@@ -80,6 +86,40 @@ class Sdelki extends React.Component {
         })
     }
 
+    setStage(id) {
+        let current = this.state.fetchedData.find(transaction => transaction.id === id)
+        let body = {
+            "fromPerson": current.fromPerson,
+            "name":  current.name,
+            "price":  parseInt(current.price),
+            "phoneNumber":  current.phoneNumber, 
+            "email" :  current.email,
+            "companyName" :  current.companyName,
+            "address" :  current.address,
+            "stage" : parseInt(this.stage.value)
+        }
+        console.log(id, body)
+        fetch(`https://crohe.herokuapp.com/api/transaction/update/${id}`, {
+            method: 'put',
+            headers: {'Content-Type':'application/json'},
+            mode: 'cors',
+            body: JSON.stringify(body)
+        })
+        .then( response =>{
+            if(response.ok){
+                alert(current.name + " изменен")
+                this.setState({
+                    loading :  true,
+                    sdelkaId : "",
+                    currentTransaction : []
+                })
+                return response.json();
+            }
+            alert("Ошибка")
+        })
+        .catch(error => console.log(error))
+    }
+
     deleteTransaction(id) {
         if(window.confirm('Вы уверены что хотите удалить сделку? После удаления его невозможно восстановить')){
             var url = `https://crohe.herokuapp.com/api/transaction/delete/${id}`
@@ -91,13 +131,48 @@ class Sdelki extends React.Component {
                     alert("Сделка удалена")
                     this.setState({
                         addSdelka : false,
-                        loading : true
+                        loading : true,
+                        currentTransaction : [],
+                        sdelkaId : ""
+                    })
+                    return response;
+                }
+                alert("Ошибка")
+            })
+        } 
+    }
+
+    forAll () {
+        this.state.fetchedData.forEach(transaction => {
+            let body = {
+                "fromPerson": "4",
+                "name":  transaction.name,
+                "price":  transaction.price,
+                "phoneNumber":  transaction.phoneNumber, 
+                "email" :  transaction.email,
+                "companyName" :  transaction.companyName,
+                "address" :  transaction.address,
+                "stage" : 1
+            }
+            fetch(`https://crohe.herokuapp.com/api/transaction/update/${transaction.id}`, {
+                method: 'put',
+                headers: {'Content-Type':'application/json'},
+                mode: 'cors',
+                body: JSON.stringify(body)
+            })
+            .then( response =>{
+                if(response.ok){
+                    this.setState({
+                        loading :  true,
+                        sdelkaId : "",
+                        currentTransaction : []
                     })
                     return response.json();
                 }
                 alert("Ошибка")
             })
-        } 
+            .catch(error => console.log(error))
+        })
     }
 
 	render(){
@@ -114,10 +189,39 @@ class Sdelki extends React.Component {
                 loading : false,
             })
         })
+
+
+        this.state.currentTransaction.length !== 0 && fetch(`https://crohe.herokuapp.com/api/staff/get/${parseInt(this.state.currentTransaction.fromPerson)}`, { 
+                method: 'get', 
+            })
+            .then(response => {
+                return response.json();
+            })
+            .then(json => {
+                this.setState({
+                    fetchedStaff : json,
+                    loadingStaff : false,
+                })
+            })
+
+        
+        var staffUrl = `https://crohe.herokuapp.com/api/staff/list`
+		this.state.loading && fetch(staffUrl, { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedStaff: json,
+                loadingStaff : false,
+            })
+        })
         
 		return(
             <div className='sdelki-page'>
-                {( this.state.addSdelka || this.state.currentTransaction.length !== 0 ) && <div onClick={() => this.setState({ addSdelka : false, currentTransaction : [] })} className='dark-bg'></div>}
+                {( this.state.addSdelka || this.state.currentTransaction.length !== 0 ) && <div onClick={() => this.setState({ addSdelka : false, currentTransaction : []})} className='dark-bg'></div>}
                 <div className='default-header'>
                     <div className='default-container' style={{height: `100%`}}>
                         <div className='flex-row'>
@@ -153,11 +257,21 @@ class Sdelki extends React.Component {
                                     первичный контакт
                                 </div>
                                 <div className='column-subtitle'>
-                                    {this.state.fetchedData.length} сделок: {this.state.fetchedData.reduce((partialSum, a) => partialSum + a.price, 0)} тенге
+                                    {
+                                        this.state.fetchedData
+                                            .filter(transaction => transaction.stage === 1)
+                                            .length
+                                    } сделок: {
+                                        this.state.fetchedData
+                                            .filter(transaction => transaction.stage === 1)
+                                            .reduce((partialSum, a) => partialSum + a.price, 0)} тенге
                                 </div>
                                 <hr></hr>
                                 {
-                                    !this.state.loading && this.state.fetchedData.map(transaction => 
+                                    !this.state.loading && this.state.fetchedData
+                                    .sort((a,b) => a.id > b.id ? 1 : -1)
+                                    .filter(transaction => transaction.stage === 1)
+                                    .map(transaction => 
                                         <div key={transaction.id} className='sdelka'>
                                             <div className='card'>
                                                 <div className='sdelka-title'>
@@ -192,51 +306,7 @@ class Sdelki extends React.Component {
                                         </div>
                                     </div>
                                 </div> */}
-                                {
-                                    this.state.currentTransaction.length !== 0 && <div className='sdelka-modal'>
-                                        <span onClick={() => this.setState({ currentTransaction : [] })} className='close-modal'>×</span>
-                                        <div className='sdelka-modal-title'>
-                                            {this.state.currentTransaction.name}
-                                        </div>
-                                        <div className='sdelka-modal-content'>
-                                            <div>
-                                                <h5>Основной контакт</h5>
-                                                <ul>
-                                                    <li>Номер телефона: {this.state.currentTransaction.phoneNumber}</li>
-                                                    <li>Почта: {this.state.currentTransaction.email}</li>
-                                                </ul>
-                                            </div>
-                                            <div>
-                                                <h5>Компания контакта</h5>
-                                                <ul>
-                                                    <li>Название: {this.state.currentTransaction.companyName}</li>
-                                                    <li>Адрес: {this.state.currentTransaction.address ? this.state.currentTransaction.address : "Жердің бір жері"}</li>
-                                                </ul>
-                                            </div>
-                                            <div>
-                                                <h5>Бюджет: {this.state.currentTransaction.price} тг</h5>
-                                            </div>
-                                            <div>
-                                                <form>
-                                                    <div>
-                                                        <select className='default-input'>
-                                                            <option value="first">ПЕРВИЧНЫЙ КОНТАКТ</option>
-                                                            <option value="second">ПЕРЕГОВОРЫ</option>
-                                                            <option value="third">ПРИНИМАЮТ РЕШЕНИЕ</option>
-                                                            <option value="fourth">СОГЛАСОВАНИЕ ДОГОВОРА</option>
-                                                        </select>
-                                                    </div>
-                                                    <div>
-                                                        <input className='default-blue-button' type="button" value="Сохранить" />
-                                                        <input onClick={() => this.deleteTransaction(this.state.currentTransaction.id)} className='default-white-button' type="button" value="Удалить" />
-                                                        <input onClick={() => this.setState({ currentTransaction : [] })} className='default-white-button' type="reset" value="Отменить" />
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                {!this.state.showQuickAdd && <button onClick={() => this.setState({showQuickAdd:true})} className='quick-add'>Быстрое добавление</button>}
+                                {/* {!this.state.showQuickAdd && <button onClick={() => this.setState({showQuickAdd:true})} className='quick-add'>Быстрое добавление</button>} */}
                                 {this.state.showQuickAdd && <div>
                                         <form className='quick-add-form'>
                                             <div>
@@ -262,7 +332,8 @@ class Sdelki extends React.Component {
                                             </div>
                                             <div className='flex-row'>
                                                 <div className='col-5'>
-                                                    <input className='submit-button' type='button' onClick={() => this.addTransactionQuick()} value="Добавить"></input>
+                                                    {/* <input className='submit-button' type='button' onClick={() => this.addTransactionQuick()} value="Добавить"></input> */}
+                                                    <input className='submit-button' type='button' onClick={() => this.forAll()} value="resetAll"></input>
                                                 </div> 
                                                 <div className='col-5'>
                                                     <input type='reset' className='cancel-button'  onClick={() => this.setState({showQuickAdd:false})} value={"Отменить"}></input>
@@ -277,27 +348,117 @@ class Sdelki extends React.Component {
                                     переговоры
                                 </div>
                                 <div className='column-subtitle'>
-                                    0 сделок: 0 тенге
+                                    {
+                                        this.state.fetchedData
+                                            .filter(transaction => transaction.stage === 2)
+                                            .length
+                                    } сделок: {
+                                        this.state.fetchedData
+                                            .filter(transaction => transaction.stage === 2)
+                                            .reduce((partialSum, a) => partialSum + a.price, 0)} тенге
                                 </div>
                                 <hr></hr>
+                                {
+                                    !this.state.loading && this.state.fetchedData
+                                    .sort((a,b) => a.id > b.id ? 1 : -1)
+                                    .filter(transaction => transaction.stage === 2)
+                                    .map(transaction => 
+                                        <div key={transaction.id} className='sdelka'>
+                                            <div className='card'>
+                                                <div className='sdelka-title'>
+                                                    {transaction.name}
+                                                </div>
+                                                <div className='sdelka-company'>
+                                                    Компания: {transaction.companyName}
+                                                </div>
+                                                <div className='sdelka-price'>
+                                                    Бюджет: {transaction.price} тг
+                                                </div>
+                                                <div className='sdelka-show'>
+                                                    <span onClick={() => this.setState({ currentTransaction : transaction })}>Показать</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             </div>
                             <div className='col-3 sdelki-column third-column'>
                                 <div className='column-title'>
                                     Принимают решение
                                 </div>
                                 <div className='column-subtitle'>
-                                    0 сделок: 0 тенге
+                                    {
+                                        this.state.fetchedData
+                                            .filter(transaction => transaction.stage === 3)
+                                            .length
+                                    } сделок: {
+                                        this.state.fetchedData
+                                            .filter(transaction => transaction.stage === 3)
+                                            .reduce((partialSum, a) => partialSum + a.price, 0)} тенге
                                 </div>
                                 <hr></hr>
+                                {
+                                    !this.state.loading && this.state.fetchedData
+                                    .sort((a,b) => a.id > b.id ? 1 : -1)
+                                    .filter(transaction => transaction.stage === 3)
+                                    .map(transaction => 
+                                        <div key={transaction.id} className='sdelka'>
+                                            <div className='card'>
+                                                <div className='sdelka-title'>
+                                                    {transaction.name}
+                                                </div>
+                                                <div className='sdelka-company'>
+                                                    Компания: {transaction.companyName}
+                                                </div>
+                                                <div className='sdelka-price'>
+                                                    Бюджет: {transaction.price} тг
+                                                </div>
+                                                <div className='sdelka-show'>
+                                                    <span onClick={() => this.setState({ currentTransaction : transaction })}>Показать</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             </div>
                             <div className='col-3 sdelki-column fourth-column'>
                                 <div className='column-title'>
                                     согласование договора
                                 </div>
                                 <div className='column-subtitle'>
-                                    0 сделок: 0 тенге
+                                    {
+                                        this.state.fetchedData
+                                            .filter(transaction => transaction.stage === 4)
+                                            .length
+                                    } сделок: {
+                                        this.state.fetchedData
+                                            .filter(transaction => transaction.stage === 4)
+                                            .reduce((partialSum, a) => partialSum + a.price, 0)} тенге
                                 </div>
                                 <hr></hr>
+                                {
+                                    !this.state.loading && this.state.fetchedData
+                                    .sort((a,b) => a.id > b.id ? 1 : -1)
+                                    .filter(transaction => transaction.stage === 4)
+                                    .map(transaction => 
+                                        <div key={transaction.id} className='sdelka'>
+                                            <div className='card'>
+                                                <div className='sdelka-title'>
+                                                    {transaction.name}
+                                                </div>
+                                                <div className='sdelka-company'>
+                                                    Компания: {transaction.companyName}
+                                                </div>
+                                                <div className='sdelka-price'>
+                                                    Бюджет: {transaction.price} тг
+                                                </div>
+                                                <div className='sdelka-show'>
+                                                    <span onClick={() => this.setState({ currentTransaction : transaction })}>Показать</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             </div>
                         </div>
                     </div>
@@ -335,6 +496,58 @@ class Sdelki extends React.Component {
                                         <input className='default-white-button' type="reset" onClick={() => this.setState({ addSdelka : false })} value="Отмена" />
                                     </div>
                                 </form>
+                            </div>
+                        </div>
+                    }
+                    
+                    {
+                        this.state.currentTransaction.length !== 0 && <div className='sdelka-modal'>
+                            <span onClick={() => this.setState({ currentTransaction : [] })} className='close-modal'>×</span>
+                            <div className='sdelka-modal-title'>
+                                {this.state.currentTransaction.name}
+                            </div>
+                            <div className='sdelka-modal-content'>
+                                <div>
+                                    <h5>От: 
+                                        {
+                                            !this.state.loadingStaff && " " + this.state.fetchedStaff.firstName + " " + this.state.fetchedStaff.lastName 
+                                        }
+                                    </h5>
+                                </div>
+                                <div>
+                                    <h5>Основной контакт</h5>
+                                    <ul>
+                                        <li>Номер телефона: {this.state.currentTransaction.phoneNumber}</li>
+                                        <li>Почта: {this.state.currentTransaction.email}</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5>Компания контакта</h5>
+                                    <ul>
+                                        <li>Название: {this.state.currentTransaction.companyName}</li>
+                                        <li>Адрес: {this.state.currentTransaction.address ? this.state.currentTransaction.address : "Жердің бір жері"}</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5>Бюджет: {this.state.currentTransaction.price} тг</h5>
+                                </div>
+                                <div>
+                                    <form>
+                                        <div>
+                                            <select ref={(ref) => {this.stage = ref}} defaultValue={this.state.currentTransaction.stage} className='default-input'>
+                                                <option value={1}>ПЕРВИЧНЫЙ КОНТАКТ</option>
+                                                <option value={2}>ПЕРЕГОВОРЫ</option>
+                                                <option value={3}>ПРИНИМАЮТ РЕШЕНИЕ</option>
+                                                <option value={4}>СОГЛАСОВАНИЕ ДОГОВОРА</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <input onClick={() => this.setStage(this.state.currentTransaction.id)} className='default-blue-button' type="button" value="Сохранить" />
+                                            <input onClick={() => this.deleteTransaction(this.state.currentTransaction.id)} className='default-white-button' type="button" value="Удалить" />
+                                            <input onClick={() => this.setState({ currentTransaction : [] })} className='default-white-button' type="reset" value="Отменить" />
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     }
