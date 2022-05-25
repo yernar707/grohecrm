@@ -7,6 +7,8 @@ class AnalyzProdazh extends React.Component {
         sklad : [],
         fetchedData : [],
         loading: true,
+        fetchedTransactions: [],
+        loadingTransactions : true,
     }
     
 	render(){
@@ -21,6 +23,21 @@ class AnalyzProdazh extends React.Component {
 			this.setState({
 				fetchedData: json,
                 loading : false,
+            })
+        })
+
+        
+        var trurl = `https://crohe.herokuapp.com/api/transaction/list`
+		this.state.loadingTransactions && fetch(trurl, { 
+            method: 'get', 
+        })
+		.then(response => {
+			return response.json();
+		})
+		.then(json => {
+			this.setState({
+				fetchedTransactions: json,
+                loadingTransactions : false,
             })
         })
 
@@ -68,10 +85,12 @@ class AnalyzProdazh extends React.Component {
                                                 Количество сделок
                                             </div>
                                             <div className='sklad-modal-card-quantity'>
-                                                52
+                                                {
+                                                    this.state.fetchedTransactions.length
+                                                }
                                             </div>
                                             <div className='sklad-modal-card-bottom'>
-                                                за неделю
+                                                {/* за неделю */}
                                             </div>
                                         </div>
                                     </div>
@@ -83,7 +102,9 @@ class AnalyzProdazh extends React.Component {
                                                 Заработок
                                             </div>
                                             <div className='sklad-modal-card-income'>
-                                                1 150 000 тг
+                                                {
+                                                    this.state.sklad.productList.reduce((partialSum, a) => partialSum + parseInt(a.priceSale) * a.parameter1, 0)
+                                                }
                                             </div>
                                             <div className='sklad-modal-card-bottom'>
                                                 за месяц
@@ -96,7 +117,9 @@ class AnalyzProdazh extends React.Component {
                                                 Расход
                                             </div>
                                             <div className='sklad-modal-card-expenses'>
-                                                540 000 тг
+                                                {
+                                                    this.state.sklad.productList.reduce((partialSum, a) => partialSum + parseInt(a.priceBought) * a.parameter1, 0)
+                                                }
                                             </div>
                                             <div className='sklad-modal-card-bottom'>
                                                 за месяц
@@ -109,7 +132,9 @@ class AnalyzProdazh extends React.Component {
                                                 Чистая прибыль
                                             </div>
                                             <div className='sklad-modal-card-profit'>
-                                                610 000 тг
+                                                {
+                                                    this.state.sklad.productList.reduce((partialSum, a) => partialSum + parseInt(a.priceSale) * a.parameter1, 0) - this.state.sklad.productList.reduce((partialSum, a) => partialSum + parseInt(a.priceBought) * a.parameter1, 0)
+                                                }
                                             </div>
                                             <div className='sklad-modal-card-bottom'>
                                                 за месяц
