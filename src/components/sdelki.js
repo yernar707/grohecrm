@@ -28,7 +28,7 @@ class Sdelki extends React.Component {
             headers: {'Content-Type':'application/json'},
             mode: 'cors',
             body: JSON.stringify({
-                "fromPerson" : getUser().firstName + " " + getUser().lastName,
+                "fromPerson" : getUser().id,
                 "name": this.nameQuick.value,
                 "price": this.priceQuick.value,
                 "phoneNumber": this.phoneNumberQuick.value,
@@ -69,7 +69,7 @@ class Sdelki extends React.Component {
             headers: {'Content-Type':'application/json'},
             mode: 'cors',
             body: JSON.stringify({
-                "fromPerson" : getUser().firstName + " " + getUser().lastName,
+                "fromPerson" : getUser().id,
                 "name" : this.name.value,
                 "price" : this.price.value,
                 "phoneNumber": this.phoneNumber.value,

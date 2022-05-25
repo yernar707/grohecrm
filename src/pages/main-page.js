@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Router } from "@reach/router"
 import { navigate } from "gatsby"
-import { isLoggedIn } from "../services/auth"
+import { isLoggedIn, getUser } from "../services/auth"
 import PrivateRoute from "../components/privateRoute"
 import Layout from "../components/layout"
 import Seo from "../components/seo"

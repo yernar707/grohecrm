@@ -57,7 +57,7 @@ class Desktop extends React.Component {
         })
 
         !this.state.grouped && !this.state.loading && this.groubedByTeam()
-        
+
 		return(
             <div className='layout-div desktop-page body-element'>
                 <div className='desktop-header row'>
@@ -87,7 +87,14 @@ class Desktop extends React.Component {
                 </div>
                 <div className='desktop-content'>
                     <div className='hello-user'>
-                        <h1>{ getUser().firstName + " " + getUser().lastName }</h1>
+                        <h1>
+                            {
+                                !this.state.loadingStaff && this.state.fetchedStaff.length > 0 && this.state.fetchedStaff.find(staff => staff.id === getUser().id).firstName + " " + this.state.fetchedStaff.find(staff => staff.id === getUser().id).lastName
+                            }
+                            { 
+                                // !this.state.loadingStaff && this.state.fetchedStaff.find(staff => staff.id === 4).firstName
+                            }
+                        </h1>
                     </div>
                     <div className='default-container'>
                         <div className='flex-row'>
